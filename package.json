@@ -1,0 +1,38 @@
+{
+  "name": "rtn-4337",
+  "version": "0.0.1",
+  "description": "react-native module for ERC 4337 using turbo modules",
+  "react-native": "js/index",
+  "source": "js/index",
+  "files": [
+    "js",
+    "android",
+    "ios",
+    "rtn-4337.podspec",
+    "!android/build",
+    "!ios/build",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__"
+  ],
+  "keywords": ["react-native", "ios", "android"],
+  "repository": "https://github.com/cometh-hq/rtn-4337",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cometh-hq/rtn-4337/issues"
+  },
+  "homepage": "https://github.com/cometh-hq/rtn-4337#readme",
+  "devDependencies": {},
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "codegenConfig": {
+    "name": "RTN4337Spec",
+    "type": "modules",
+    "jsSrcsDir": "js",
+    "android": {
+      "javaPackageName": "io.cometh.rtn4337"
+    }
+  }
+}
