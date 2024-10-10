@@ -4,16 +4,23 @@
 
 # rtn-4337
 
-`rtn-4337` is a React Native SDK for building with [ERC-4337](https://eips.ethereum.org/EIPS/eip-4337).
-It wraps two existing libraries, [android4337](https://github.com/cometh-hq/android4337) and [swift4337](https://github.com/cometh-hq/swift4337).
-Built for the new React Native architecture with TurboModules, `rtn-4337` brings the main features from the native libraries. While not all features from the native versions are available, the key functionalities have been included.
+`rtn-4337` is a React Native SDK that wraps natives libraries [android4337](https://github.com/cometh-hq/android4337) and [swift4337](https://github.com/cometh-hq/swift4337) for building with [ERC-4337](https://eips.ethereum.org/EIPS/eip-4337).
+
+Built for the new React Native architecture with TurboModules, `rtn-4337` brings the main features from the native libraries.
+
+We currently support the following features:
+- **Safe Account**: We offer a high-level API for deploying and managing smart accounts (currently supporting Safe Account).
+- **Bundler**: Comprehensive support for all bundler methods as defined
+  by [ERC-4337](https://eips.ethereum.org/EIPS/eip-4337#rpc-methods-eth-namespace).
+- **Paymaster**: Enables paymaster for gas fee sponsorship.
+- **Signers**: We support Passkey Signer, which allows users to sign user operation using biometrics.
 
 ## Installation
 
-To add `rtn-4337` to your React Native project, use Yarn or npm to install the package directly from the GitHub repository:
+To add `rtn-4337` to your React Native project, install the package directly from the GitHub repository:
 
 ```console
-yarn add cometh-hq/rtn-4337 // or npm install cometh-hq/rtn-4337
+yarn add rtn-4337@github:cometh-hq/rtn-4337
 ```
 
 ## Getting Started
@@ -67,9 +74,9 @@ constructor(
 )
 ```
 
-- chainId: Needed for android lib.
-- paymasterUrl: If specified, it will be used when preparing the user operation to sponsor gas fees.
-- safeConfig: If not provided, the default configuration will be used.
+- **chainId**: Needed for android lib.
+- **paymasterUrl**: If specified, it will be used when preparing the user operation to sponsor gas fees.
+- **safeConfig**: If not provided, the default configuration will be used.
 
 ```swift
 // these values are from the safe deployments repo
@@ -86,6 +93,12 @@ const defaultConfig: SafeConfig = {
 }
 ```
 
+> [!NOTE]  
+> We use the default Gas Estimator provided by the native libraries. For more details, refer to their implementation of `RPCGasEstimator`:
+> - [android4337](https://github.com/cometh-hq/android4337/blob/main/android4337/src/main/java/io/cometh/android4337/gasprice/RPCGasEstimator.kt)
+> - [swift4337](https://github.com/cometh-hq/swift4337/blob/main/Sources/swift4337/gas-estimator/RPCGasEstimator.swift)
+
+
 ### Signer
 
 To control a Smart Account, users need a Signer for authentication.
@@ -98,16 +111,13 @@ On chain contracts use ERC-1271 and WebAuthn standards for verifying WebAuthn si
 
 > [!IMPORTANT]
 > To enable passkey support on Android and iOS, you need to follow some instructions. Please refer to the original libraries for more information:
-> - [android4337](https://github.com/cometh-hq/swift4337?tab=readme-ov-file#passkey-signer)
+> - [android4337](https://github.com/cometh-hq/android4337?tab=readme-ov-file#passkey-signer)
 > - [swift4337](https://github.com/cometh-hq/swift4337?tab=readme-ov-file#passkey-signer)
 
 > [!IMPORTANT]  
 > When initializing a Safe Account with a Passkey signer it will use the Safe WebAuthn Shared Signer to respect 4337 limitation. For more information have a look at [Safe Documentation](https://github.com/safe-global/safe-modules/tree/main/modules/passkey/contracts/4337#safe-webauthn-shared-signer)
 
 ##### Safe WebAuthn Shared Signer
-
-> [!IMPORTANT]
-> At the moment, we only support the Safe WebAuthn Shared Signer.
 
 There is one notable caveat when using the passkey module with ERC-4337 specifically, which is that ERC-4337 user operations can only deploy exactly one CREATE2 contract whose address matches the sender of the user operation. This means that deploying both the Safe account and its WebAuthn credential owner in a user operation's initCode is not possible.
 In order to bypass this limitation you can use the SafeWebAuthnSharedSigner: a singleton that can be used as a Safe owner.
@@ -127,8 +137,7 @@ const userOpHash = await safeAccount.sendUserOperation(to, value, data)
 This will init a safe with a Passkey Signer using the Safe WebAuthn Shared Signer contract as owner.
 When deploying the safe, the Safe WebAuthn Shared Signer will be configured with the x and y of the passkey used.
 
-You can check the example app for a complete example (see [sample](https://github.com/cometh-hq/rt-4337/tree/main/example)).
-
+You can check the example app for a complete example (see [example](https://github.com/cometh-hq/rt-4337/tree/main/example)).
 
 ##### Safe WebAuthn Signer
 
@@ -136,7 +145,16 @@ Not yet supported.
 
 #### EOASigner
 
-Not yet supported.
+You can also use an EOASigner to sign user operations. This signer is used to sign user operations with an EOA.
+
+**NOTE: TODO**.
+
+```typescript
+const signer = { privateKey: "xxxxxxxxxxx" }
+const safeAccount = new SafeAccount(chainId, rpcUrl, bundlerUrl, signer, paymasterUrl)
+
+const userOpHash = await safeAccount.sendUserOperation(to, value, data)
+```
 
 ### RPC, Bundler and Paymaster URLs
 
@@ -147,7 +165,14 @@ Not yet supported.
 The native libraries allow for overriding and creating your own RPC, bundler, or paymaster; this is not the case with this SDK. 
 Thus, we use the default implementations provided by the underlying native libraries.
 
-## Dependencies
+## Contributors
+
+The initial project was crafted by the team at Cometh. However, we encourage anyone to help implement new features and to keep this library up-to-date. Please follow the [contributing guidelines](https://github.com/cometh-hq/rtn-4337/blob/main/CONTRIBUTING.md).
+
+## License
+
+Released under the [Apache License](https://github.com/cometh-hq/rtn-4337/blob/main/LICENSE.txt).
+
 
 
 
