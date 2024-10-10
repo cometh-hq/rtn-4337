@@ -30,7 +30,6 @@ function App(): React.JSX.Element {
   const signer = {
     rpId: "sample4337.cometh.io",
     userName: "my_user",
-    // privateKey: "4bddaeef5fb283e847abf0bd480a771b7695d70f413b248dc56c0bb1bb4a0b86"
   }
   const safeAccount = new SafeAccount(
     84532, // needed for android

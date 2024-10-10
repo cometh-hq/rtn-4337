@@ -85,12 +85,12 @@ class ERC4337Module(val reactContext: ReactApplicationContext) : NativeRTN4337Sp
         if (signer.hasKey("rpId")) {
             val rpId = signer.getString("rpId")!!
             val userName = signer.getString("userName")!!
-            val shared = signer.getBoolean("shared") ?: true
-            if (shared) {
-                return PasskeySigner.withSharedSigner(reactContext, rpId, userName)
-            } else {
-                throw Exception("Not implemented")
-            }
+            //val shared = signer.getBoolean("shared") ?: true
+            //if (shared) {
+            return PasskeySigner.withSharedSigner(reactContext, rpId, userName)
+            //} else {
+            //throw Exception("Not implemented")
+            //}
         } else {
             val privateKey = signer.getString("privateKey")!!
             return EOASigner(Credentials.create(privateKey))
