@@ -160,8 +160,8 @@ class ERC4337Module(val reactContext: ReactApplicationContext) : NativeRTN4337Sp
     override fun predictAddress(rpcUrl: String, signer: ReadableMap, promise: Promise) {
         CoroutineScope(Dispatchers.Main).launch {
             val rpcService = HttpService(rpcUrl)
-            val signer = getSigner(signer)
             try {
+                val signer = getSigner(signer)
                 val address = withContext(Dispatchers.IO) {
                     SafeAccount.predictAddress(signer, rpcService)
                 }
@@ -183,8 +183,8 @@ class ERC4337Module(val reactContext: ReactApplicationContext) : NativeRTN4337Sp
         CoroutineScope(Dispatchers.Main).launch {
             val rpcService = HttpService(rpcUrl)
             val bundlerClient = SimpleBundlerClient(HttpService(bundlerUrl))
-            val s = getSigner(signer)
             try {
+                val s = getSigner(signer)
                 val owners = withContext(Dispatchers.IO) {
                     val safeAccount = SafeAccount.createNewAccount(s, bundlerClient, chainId.toInt(), rpcService)
                     safeAccount.getOwners() ?: emptyList()
