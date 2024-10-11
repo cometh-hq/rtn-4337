@@ -48,6 +48,7 @@ class ERC4337Module(val reactContext: ReactApplicationContext) : NativeRTN4337Sp
         signer: ReadableMap,
         config: ReadableMap,
         paymasterUrl: String?,
+        address: String?,
         promise: Promise
     ) {
         CoroutineScope(Dispatchers.Main).launch {
@@ -58,7 +59,7 @@ class ERC4337Module(val reactContext: ReactApplicationContext) : NativeRTN4337Sp
               val s = getSigner(signer)
               withContext(Dispatchers.IO) {
                   val safeConfig = getSafeConfig(config)
-                  val safeAccount = SafeAccount.createNewAccount(s, bundlerClient, chainId.toInt(), rpcService, paymasterClient = paymasterClient, config = safeConfig)
+                  val safeAccount = getSafeAccount(address, s, rpcService, bundlerClient, chainId.toInt(), paymasterClient, safeConfig)
                   val hash = safeAccount.sendUserOperation(to_address.hexToAddress(), value = value.hexToBigInt(), data = data.toByteArray(), delegateCall = delegateCall)
                   promise.resolve(hash)
               }
@@ -118,6 +119,7 @@ class ERC4337Module(val reactContext: ReactApplicationContext) : NativeRTN4337Sp
         signature: String,
         signer: ReadableMap,
         config: ReadableMap,
+        address: String?,
         promise: Promise,
     ) {
         CoroutineScope(Dispatchers.Main).launch {
@@ -144,7 +146,7 @@ class ERC4337Module(val reactContext: ReactApplicationContext) : NativeRTN4337Sp
                 val s = getSigner(signer)
                 val safeConfig = getSafeConfig(config)
                 val safeAccount = withContext(Dispatchers.IO) {
-                    SafeAccount.createNewAccount(s, bundlerClient, chainId.toInt(), rpcService, config = safeConfig)
+                    getSafeAccount(address, s, rpcService, bundlerClient, chainId.toInt(), null, safeConfig)
                 }
                 Log.i(TAG, "signUserOperation: $userOperation")
                 val result = safeAccount.signUserOperation(userOperation)
@@ -154,6 +156,14 @@ class ERC4337Module(val reactContext: ReactApplicationContext) : NativeRTN4337Sp
                 Log.e(TAG, "signUserOperation error", e)
                 promise.reject(e)
             }
+        }
+    }
+
+    private fun getSafeAccount(address: String?, signer: Signer, rpcService: HttpService, bundlerClient: SimpleBundlerClient, chainId: Int, paymasterClient: PaymasterClient?, config: SafeConfig): SafeAccount {
+        return if (address != null) {
+            SafeAccount.fromAddress(address, signer, bundlerClient, chainId, rpcService, paymasterClient= paymasterClient, config = config)
+        } else {
+            SafeAccount.createNewAccount(signer, bundlerClient, chainId, rpcService, paymasterClient= paymasterClient, config = config)
         }
     }
 

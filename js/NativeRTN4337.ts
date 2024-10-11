@@ -12,6 +12,7 @@ export interface Spec extends TurboModule {
     signer: Object,
     config: Object,
     paymasterUrl?: string,
+    address?: string,
   ): Promise<string>
 
   /**
@@ -38,6 +39,7 @@ export interface Spec extends TurboModule {
     signature: string,
     signer: Object,
     config: Object,
+    address?: string,
   ): Promise<string>
 
   getOwners(

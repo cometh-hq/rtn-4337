@@ -18,6 +18,7 @@ const defaultConfig: SafeConfig = {
 
 class SafeAccount {
   private chainId: number
+  private address: string
   private rpcUrl: string
   private bundlerUrl: string
   private paymasterUrl?: string
@@ -30,6 +31,7 @@ class SafeAccount {
     bundlerUrl: string,
     signer: PasskeySigner | EOASigner,
     paymasterUrl?: string,
+    address?: string,
     safeConfig: SafeConfig = defaultConfig
   ) {
     this.chainId = chainId;
@@ -37,6 +39,9 @@ class SafeAccount {
     this.bundlerUrl = bundlerUrl;
     this.paymasterUrl = paymasterUrl;
     this.signer = signer;
+    // check it's an address
+    if (address && !isValidEthereumAddress(address)) throw new Error("address is not a valid ethereum address")
+    this.address = address
     verifyConfig(safeConfig)
     this.config = {...defaultConfig, ...safeConfig}
   }
@@ -50,7 +55,8 @@ class SafeAccount {
       delegateCall,
       this.signer,
       this.config,
-      this.paymasterUrl
+      this.paymasterUrl,
+      this.address
     );
   }
 
@@ -74,7 +80,8 @@ class SafeAccount {
       userOp.paymasterPostOpGasLimit,
       userOp.signature,
       this.signer,
-      this.config
+      this.config,
+      this.address
     );
   }
 
