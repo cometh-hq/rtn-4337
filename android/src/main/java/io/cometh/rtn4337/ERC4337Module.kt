@@ -231,6 +231,34 @@ class ERC4337Module(val reactContext: ReactApplicationContext) : NativeRTN4337Sp
        }
     }
 
+    override fun addOwner(
+        chainId: Double,
+        rpcUrl: String,
+        bundlerUrl: String,
+        owner: String,
+        signer: ReadableMap,
+        config: ReadableMap,
+        paymasterUrl: String?,
+        address: String?,
+        promise: Promise
+    ) {
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                val signer = getSigner(signer)
+                val paymasterClient = if (paymasterUrl != null) PaymasterClient(paymasterUrl) else null
+                val hash = withContext(Dispatchers.IO) {
+                    val safeAccount = getSafeAccount(address, signer, HttpService(rpcUrl), SimpleBundlerClient(HttpService(bundlerUrl)), chainId.toInt(), paymasterClient, getSafeConfig(config))
+                    safeAccount.addOwner(owner.hexToAddress())
+                }
+                promise.resolve(hash)
+            } catch (e: Exception) {
+                Log.e(TAG, "addOwner error", e)
+                promise.reject(e)
+            }
+       }
+    }
+
+
     companion object {
         const val NAME = "RTN4337"
     }

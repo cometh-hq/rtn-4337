@@ -46,7 +46,7 @@ class SafeAccount {
     this.config = {...defaultConfig, ...safeConfig}
   }
 
-  sendUserOperation(to_address: string, value: string, data: string, delegateCall: boolean = false) {
+  sendUserOperation(to_address: string, value: string, data: string, delegateCall: boolean = false): Promise<string> {
     return NativeRTN4337.sendUserOperation(
       this.chainId, this.rpcUrl, this.bundlerUrl,
       to_address,
@@ -60,7 +60,7 @@ class SafeAccount {
     );
   }
 
-  signUserOperation(userOp: UserOp) {
+  signUserOperation(userOp: UserOp): Promise<string> {
     isValidUserOp(userOp);
     return NativeRTN4337.signUserOperation(
       this.chainId, this.rpcUrl, this.bundlerUrl,
@@ -85,11 +85,11 @@ class SafeAccount {
     );
   }
 
-  getOwners() {
+  getOwners(): Promise<string[]> {
     return NativeRTN4337.getOwners(this.chainId, this.rpcUrl, this.bundlerUrl, this.signer, this.config, this.address)
   }
 
-  getConfig() {
+  getConfig(): SafeConfig {
     return this.config
   }
 
@@ -97,9 +97,13 @@ class SafeAccount {
     return NativeRTN4337.isDeployed(this.chainId, this.rpcUrl, this.bundlerUrl, this.signer, this.config, this.address)
   }
 
+  addOwner(owner: string): Promise<string> {
+    if (!isValidEthereumAddress(owner)) throw new Error("owner is not a valid ethereum address")
+    return NativeRTN4337.addOwner(this.chainId, this.rpcUrl, this.bundlerUrl, owner, this.signer, this.config, this.paymasterUrl, this.address)
+  }
+
 }
 
-// check userOp
 const isValidUserOp = (userOp: UserOp) => {
   if (!isValidEthereumAddress(userOp.sender)) throw new Error("Invalid sender address")
   if (!isValidHex(userOp.nonce)) throw new Error("Invalid nonce")

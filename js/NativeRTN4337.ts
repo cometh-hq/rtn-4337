@@ -60,6 +60,17 @@ export interface Spec extends TurboModule {
     address?: string,
   ): Promise<boolean>
 
+  addOwner(
+    chainId: number,
+    rpcUrl: string,
+    bundlerUrl: string,
+    owner: string,
+    signer: Object,
+    config: Object,
+    paymasterUrl?: string,
+    address?: string,
+  ): Promise<string>
+
   predictAddress(
     rpcUrl: string,
     signer: Object,
