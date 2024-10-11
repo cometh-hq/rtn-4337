@@ -86,11 +86,15 @@ class SafeAccount {
   }
 
   getOwners() {
-    return NativeRTN4337.getOwners(this.chainId, this.rpcUrl, this.bundlerUrl, this.signer)
+    return NativeRTN4337.getOwners(this.chainId, this.rpcUrl, this.bundlerUrl, this.signer, this.config, this.address)
   }
 
   getConfig() {
     return this.config
+  }
+
+  isDeployed(): Promise<boolean> {
+    return NativeRTN4337.isDeployed(this.chainId, this.rpcUrl, this.bundlerUrl, this.signer, this.config, this.address)
   }
 
 }

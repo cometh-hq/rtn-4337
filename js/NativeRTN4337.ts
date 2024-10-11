@@ -47,7 +47,18 @@ export interface Spec extends TurboModule {
     rpcUrl: string,
     bundlerUrl: string,
     signer: Object,
+    config: Object,
+    address?: string,
   ): Promise<Array<string>>
+
+  isDeployed(
+    chainId: number,
+    rpcUrl: string,
+    bundlerUrl: string,
+    signer: Object,
+    config: Object,
+    address?: string,
+  ): Promise<boolean>
 
   predictAddress(
     rpcUrl: string,

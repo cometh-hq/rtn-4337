@@ -20,6 +20,7 @@ function App(): React.JSX.Element {
   const [address, setAddress] = React.useState('');
   const [owners, setOwners] = React.useState('');
   const [userOpHash, setUserOpHash] = React.useState('');
+  const [isDeployed, setIsDeployed] = React.useState('');
 
   const signer = {
     rpId: 'sample4337.cometh.io',
@@ -81,6 +82,18 @@ function App(): React.JSX.Element {
             }}/>
           </View>
           <Text style={styles.sectionDescription}>Owners = {owners}</Text>
+          <View style={styles.button}>
+            <Button title={'Is deployed ?'} onPress={() => {
+              setIsDeployed('⌛');
+              safeAccount.isDeployed().then((result) => {
+                setIsDeployed(result ? 'true' : 'false');
+              })
+                .catch((error) => {
+                  setIsDeployed('❌ error: ' + error);
+                });
+            }}/>
+          </View>
+          <Text style={styles.sectionDescription}>isDeployed = {isDeployed}</Text>
           {/*<Button title={"Sign User Op"} onPress={() => {*/}
           {/*  console.log("Sign User Op")*/}
           {/*  const userOp = {*/}

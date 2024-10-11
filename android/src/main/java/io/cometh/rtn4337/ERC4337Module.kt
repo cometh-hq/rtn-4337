@@ -188,20 +188,44 @@ class ERC4337Module(val reactContext: ReactApplicationContext) : NativeRTN4337Sp
         rpcUrl: String,
         bundlerUrl: String,
         signer: ReadableMap,
+        config: ReadableMap,
+        address: String?,
         promise: Promise
     ) {
         CoroutineScope(Dispatchers.Main).launch {
-            val rpcService = HttpService(rpcUrl)
-            val bundlerClient = SimpleBundlerClient(HttpService(bundlerUrl))
             try {
-                val s = getSigner(signer)
+                val signer = getSigner(signer)
                 val owners = withContext(Dispatchers.IO) {
-                    val safeAccount = SafeAccount.createNewAccount(s, bundlerClient, chainId.toInt(), rpcService)
+                    val safeAccount = getSafeAccount(address, signer, HttpService(rpcUrl), SimpleBundlerClient(HttpService(bundlerUrl)), chainId.toInt(), null, getSafeConfig(config))
                     safeAccount.getOwners() ?: emptyList()
                 }
                 promise.resolve(owners.map { it.toString() }.toReadableArray())
             } catch (e: Exception) {
                 Log.e(TAG, "getOwners error", e)
+                promise.reject(e)
+            }
+       }
+    }
+
+    override fun isDeployed(
+        chainId: Double,
+        rpcUrl: String,
+        bundlerUrl: String,
+        signer: ReadableMap,
+        config: ReadableMap,
+        address: String?,
+        promise: Promise
+    ) {
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                val signer = getSigner(signer)
+                val isDeployed = withContext(Dispatchers.IO) {
+                    val safeAccount = getSafeAccount(address, signer, HttpService(rpcUrl), SimpleBundlerClient(HttpService(bundlerUrl)), chainId.toInt(), null, getSafeConfig(config))
+                    safeAccount.isDeployed()
+                }
+                promise.resolve(isDeployed)
+            } catch (e: Exception) {
+                Log.e(TAG, "isDeployed error", e)
                 promise.reject(e)
             }
        }
