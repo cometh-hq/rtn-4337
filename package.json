@@ -9,6 +9,7 @@
     "android",
     "ios",
     "rtn-4337.podspec",
+    "!example",
     "!android/build",
     "!ios/build",
     "!**/__tests__",

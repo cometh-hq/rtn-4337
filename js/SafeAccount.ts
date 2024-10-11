@@ -43,13 +43,14 @@ class SafeAccount {
 
   sendUserOperation(to_address: string, value: string, data: string, delegateCall: boolean = false) {
     return NativeRTN4337.sendUserOperation(
-      this.chainId, this.rpcUrl, this.bundlerUrl, this.paymasterUrl,
+      this.chainId, this.rpcUrl, this.bundlerUrl,
       to_address,
       value,
       data,
       delegateCall,
       this.signer,
-      this.config
+      this.config,
+      this.paymasterUrl
     );
   }
 

@@ -5,13 +5,13 @@ export interface Spec extends TurboModule {
     chainId: number,
     rpcUrl: string,
     bundlerUrl: string,
-    paymasterUrl: string | null,
     to_address: string,
     value: string,
     data: string,
     delegateCall: boolean,
     signer: Object,
     config: Object,
+    paymasterUrl?: string,
   ): Promise<string>
 
   /**

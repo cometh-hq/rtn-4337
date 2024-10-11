@@ -41,13 +41,13 @@ class ERC4337Module(val reactContext: ReactApplicationContext) : NativeRTN4337Sp
         chainId: Double,
         rpcUrl: String,
         bundlerUrl: String,
-        paymasterUrl: String?,
         to_address: String,
         value: String,
         data: String,
         delegateCall: Boolean,
         signer: ReadableMap,
         config: ReadableMap,
+        paymasterUrl: String?,
         promise: Promise
     ) {
         CoroutineScope(Dispatchers.Main).launch {
