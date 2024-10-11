@@ -7,36 +7,31 @@
 
 import SafeAccount from 'rtn-4337/js/SafeAccount';
 import * as SafeUtils from 'rtn-4337/js/SafeUtils';
-import type {PropsWithChildren} from 'react';
 import React from 'react';
-import {Button, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, View,} from 'react-native';
+import {Button, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, View} from 'react-native';
 
-import {Colors,} from 'react-native/Libraries/NewAppScreen';
-
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 function App(): React.JSX.Element {
   const backgroundStyle = {
     padding: 10,
   };
 
-  const [address, setAddress] = React.useState("")
-  const [owners, setOwners] = React.useState("")
-  const [userOpHash, setUserOpHash] = React.useState("")
+  const [address, setAddress] = React.useState('');
+  const [owners, setOwners] = React.useState('');
+  const [userOpHash, setUserOpHash] = React.useState('');
 
   const signer = {
-    rpId: "sample4337.cometh.io",
-    userName: "my_user",
-  }
+    rpId: 'sample4337.cometh.io',
+    userName: 'my_user',
+  };
   const safeAccount = new SafeAccount(
     84532, // needed for android
-    "https://base-sepolia.g.alchemy.com/v2/UEwp8FtpdjcL5oekF6CjMzxe1D3768XU",
-    "https://bundler.cometh.io/84532/?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx",
+    'https://base-sepolia.g.alchemy.com/v2/UEwp8FtpdjcL5oekF6CjMzxe1D3768XU',
+    'https://bundler.cometh.io/84532/?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx',
     signer,
-    "https://paymaster.cometh.io/84532?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx"
-  )
+    'https://paymaster.cometh.io/84532?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx'
+  );
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -49,40 +44,40 @@ function App(): React.JSX.Element {
         style={backgroundStyle}>
         <View>
           <View style={{marginTop: 20}}>
-            <Button title={"Predict address"} onPress={() => {
-              setAddress("⌛")
-              SafeUtils.predictAddress("https://base-sepolia.g.alchemy.com/v2/UEwp8FtpdjcL5oekF6CjMzxe1D3768XU", signer)
+            <Button title={'Predict address'} onPress={() => {
+              setAddress('⌛');
+              SafeUtils.predictAddress('https://base-sepolia.g.alchemy.com/v2/UEwp8FtpdjcL5oekF6CjMzxe1D3768XU', signer)
                 .then((result) => {
-                  setAddress("✅ " + result)
+                  setAddress('✅ ' + result);
                 })
                 .catch((error) => {
-                  setAddress("❌ error: " + error)
-                })
+                  setAddress('❌ error: ' + error);
+                });
             }}/>
           </View>
           <Text style={styles.sectionDescription}>Address = {address}</Text>
           <View style={styles.button}>
-            <Button title={"Send Transaction"} onPress={() => {
-              console.log("Sending User Op")
-              setUserOpHash("⌛")
-              safeAccount.sendUserOperation("0x2f920a66C2f9760f6fE5F49b289322Ddf60f9103", "0x0", "0xaaaa", false).then((result) => {
-                setUserOpHash("✅ " + result)
+            <Button title={'Send Transaction'} onPress={() => {
+              console.log('Sending User Op');
+              setUserOpHash('⌛');
+              safeAccount.sendUserOperation('0x2f920a66C2f9760f6fE5F49b289322Ddf60f9103', '0x0', '0xaaaa', false).then((result) => {
+                setUserOpHash('✅ ' + result);
               }).catch((error) => {
-                setUserOpHash("❌ error: " + error)
-                console.error(error)
-              })
+                setUserOpHash('❌ error: ' + error);
+                console.error(error);
+              });
             }}/>
           </View>
           <Text style={styles.sectionDescription}>hash = {userOpHash}</Text>
           <View style={styles.button}>
-            <Button title={"Get owners"} onPress={() => {
-              setOwners("⌛")
+            <Button title={'Get owners'} onPress={() => {
+              setOwners('⌛');
               safeAccount.getOwners().then((result) => {
-                setOwners("✅ " + result.join(", "))
+                setOwners('✅ ' + result.join(', '));
               })
                 .catch((error) => {
-                  setOwners("❌ error: " + error)
-                })
+                  setOwners('❌ error: ' + error);
+                });
             }}/>
           </View>
           <Text style={styles.sectionDescription}>Owners = {owners}</Text>
@@ -132,7 +127,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '400',
     userSelect: 'text',
-    color: Colors.white
+    color: Colors.white,
   },
   button: {
     marginTop: 10,
