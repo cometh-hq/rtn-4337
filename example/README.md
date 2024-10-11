@@ -4,6 +4,6 @@
 Launch on Android
 
 ```
-cd android
-yarn install && ./gradlew generateCodegenArtifactsFromSchema && yarn start
+yarn install
+yarn start
 ```
