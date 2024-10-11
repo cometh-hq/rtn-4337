@@ -89,6 +89,10 @@ class SafeAccount {
     return NativeRTN4337.getOwners(this.chainId, this.rpcUrl, this.bundlerUrl, this.signer)
   }
 
+  getConfig() {
+    return this.config
+  }
+
 }
 
 // check userOp
