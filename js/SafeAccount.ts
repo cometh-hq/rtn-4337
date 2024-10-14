@@ -102,6 +102,20 @@ class SafeAccount {
     return NativeRTN4337.addOwner(this.chainId, this.rpcUrl, this.bundlerUrl, owner, this.signer, this.config, this.paymasterUrl, this.address)
   }
 
+  prepareUserOperation(to_address: string, value: string, data: string, delegateCall: boolean = false): Promise<UserOp> {
+    return NativeRTN4337.prepareUserOperation(
+      this.chainId, this.rpcUrl, this.bundlerUrl,
+      to_address,
+      value,
+      data,
+      delegateCall,
+      this.signer,
+      this.config,
+      this.paymasterUrl,
+      this.address
+    ).then((result) => result as UserOp)
+  }
+
 }
 
 const isValidUserOp = (userOp: UserOp) => {

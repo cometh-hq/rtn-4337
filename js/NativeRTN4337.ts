@@ -76,6 +76,20 @@ export interface Spec extends TurboModule {
     signer: Object,
   ): Promise<string>
 
+  prepareUserOperation(
+    chainId: number,
+    rpcUrl: string,
+    bundlerUrl: string,
+    to_address: string,
+    value: string,
+    data: string,
+    delegateCall: boolean,
+    signer: Object,
+    config: Object,
+    paymasterUrl?: string,
+    address?: string,
+  ): Promise<Object>
+
 }
 
 export default TurboModuleRegistry.get<Spec>("RTN4337") as Spec | null;

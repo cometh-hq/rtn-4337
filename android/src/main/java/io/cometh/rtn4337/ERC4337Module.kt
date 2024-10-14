@@ -3,6 +3,8 @@ package io.cometh.rtn4337
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.Arguments;
 
 import io.cometh.rtn4337.toReadableArray
 import io.cometh.rtn4337.NativeRTN4337Spec
@@ -258,6 +260,53 @@ class ERC4337Module(val reactContext: ReactApplicationContext) : NativeRTN4337Sp
        }
     }
 
+    override fun prepareUserOperation(
+       chainId: Double,
+       rpcUrl: String,
+       bundlerUrl: String,
+       to_address: String,
+       value: String,
+       data: String,
+       delegateCall: Boolean,
+       signer: ReadableMap,
+       config: ReadableMap,
+       paymasterUrl: String?,
+       address: String?,
+       promise: Promise
+    ) {
+        CoroutineScope(Dispatchers.Main).launch {
+            val rpcService = HttpService(rpcUrl)
+            val bundlerClient = SimpleBundlerClient(HttpService(bundlerUrl))
+            val paymasterClient = if (paymasterUrl != null) PaymasterClient(paymasterUrl) else null
+            try {
+              val s = getSigner(signer)
+              withContext(Dispatchers.IO) {
+                  val safeConfig = getSafeConfig(config)
+                  val safeAccount = getSafeAccount(address, s, rpcService, bundlerClient, chainId.toInt(), paymasterClient, safeConfig)
+                  val userOp = safeAccount.prepareUserOperation(to_address.hexToAddress(), value = value.hexToBigInt(), data = data.toByteArray(), delegateCall = delegateCall)
+                  val map: WritableMap = Arguments.createMap()
+                  map.putString("sender", userOp.sender)
+                  map.putString("nonce", userOp.nonce)
+                  map.putString("factory", userOp.factory)
+                  map.putString("factoryData", userOp.factoryData)
+                  map.putString("callData", userOp.callData)
+                  map.putString("callGasLimit", userOp.callGasLimit)
+                  map.putString("verificationGasLimit", userOp.verificationGasLimit)
+                  map.putString("preVerificationGas", userOp.preVerificationGas)
+                  map.putString("maxFeePerGas", userOp.maxFeePerGas)
+                  map.putString("maxPriorityFeePerGas", userOp.maxPriorityFeePerGas)
+                  map.putString("paymaster", userOp.paymaster)
+                  map.putString("paymasterData", userOp.paymasterData)
+                  map.putString("paymasterVerificationGasLimit", userOp.paymasterVerificationGasLimit)
+                  map.putString("paymasterPostOpGasLimit", userOp.paymasterPostOpGasLimit)
+                  map.putString("signature", userOp.signature)
+                  promise.resolve(map)
+              }
+            } catch (e: Exception) {
+              promise.reject(e)
+            }
+       }
+    }
 
     companion object {
         const val NAME = "RTN4337"
