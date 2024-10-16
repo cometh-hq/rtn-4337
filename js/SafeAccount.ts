@@ -146,4 +146,4 @@ const isValidUserOp = (userOp: UserOp) => {
   if (!isValidHex(userOp.signature)) throw new Error("Invalid signature")
 }
 
-export default SafeAccount;
+export { SafeAccount };

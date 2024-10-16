@@ -5,13 +5,11 @@
  * @format
  */
 
-import SafeAccount from 'rtn-4337/js/SafeAccount';
-import * as SafeUtils from 'rtn-4337/js/SafeUtils';
+import { SafeAccount, PasskeySigner, SafeUtils } from 'rtn-4337';
 import React from 'react';
 import {Button, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, View} from 'react-native';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {PasskeySigner} from 'rtn-4337/js/signer/PasskeySigner';
 
 function App(): React.JSX.Element {
   const backgroundStyle = {

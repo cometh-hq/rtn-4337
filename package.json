@@ -2,8 +2,8 @@
   "name": "rtn-4337",
   "version": "0.0.1",
   "description": "react-native module for ERC 4337 using turbo modules",
-  "react-native": "js/index",
-  "source": "js/index",
+  "react-native": "index",
+  "source": "index",
   "files": [
     "js",
     "android",
