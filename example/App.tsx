@@ -5,7 +5,7 @@
  * @format
  */
 
-import { SafeAccount, PasskeySigner, SafeUtils } from 'rtn-4337';
+import {PasskeySigner, SafeAccount, SafeUtils} from 'rtn-4337';
 import React from 'react';
 import {Button, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, View} from 'react-native';
 
@@ -54,7 +54,7 @@ function App(): React.JSX.Element {
                       rpcUrl: 'https://base-sepolia.g.alchemy.com/v2/UEwp8FtpdjcL5oekF6CjMzxe1D3768XU',
                       bundlerUrl: 'https://bundler.cometh.io/84532/?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx',
                       signer: _signer,
-                      paymasterUrl:'https://paymaster.cometh.io/84532?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx',
+                      paymasterUrl: 'https://paymaster.cometh.io/84532?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx',
                     }
                   );
                   setSigner(_signer);
@@ -82,7 +82,12 @@ function App(): React.JSX.Element {
                 <Button title={'Send Transaction'} onPress={() => {
                   console.log('Sending User Op');
                   setUserOpHash('⌛');
-                  safeAccount.sendUserOperation('0x2f920a66C2f9760f6fE5F49b289322Ddf60f9103', '0x0', '0xaaaa', false).then((result) => {
+                  safeAccount.sendUserOperation(
+                    '0x2f920a66C2f9760f6fE5F49b289322Ddf60f9103',
+                    '0x0',
+                    '0xaaaa',
+                    false
+                  ).then((result) => {
                     setUserOpHash('✅ ' + result);
                   }).catch((error) => {
                     setUserOpHash('❌ error: ' + error);
