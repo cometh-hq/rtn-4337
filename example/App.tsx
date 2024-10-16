@@ -8,9 +8,10 @@
 import SafeAccount from 'rtn-4337/js/SafeAccount';
 import * as SafeUtils from 'rtn-4337/js/SafeUtils';
 import React from 'react';
-import {Button, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, View} from 'react-native';
+import {Button, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, View} from 'react-native';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {PasskeySigner} from 'rtn-4337/js/signer/PasskeySigner';
 
 function App(): React.JSX.Element {
   const backgroundStyle = {
@@ -22,18 +23,11 @@ function App(): React.JSX.Element {
   const [userOpHash, setUserOpHash] = React.useState('');
   const [isDeployed, setIsDeployed] = React.useState('');
   const [addOwner, setAddOwner] = React.useState('');
+  const [safeAccount, setSafeAccount] = React.useState<SafeAccount | null>(null);
+  const [signer, setSigner] = React.useState<PasskeySigner | null>(null);
+  const [userName, setUserName] = React.useState('passkey_username');
 
-  const signer = {
-    rpId: 'sample4337.cometh.io',
-    userName: 'my_user',
-  };
-  const safeAccount = new SafeAccount(
-    84532, // needed for android
-    'https://base-sepolia.g.alchemy.com/v2/UEwp8FtpdjcL5oekF6CjMzxe1D3768XU',
-    'https://bundler.cometh.io/84532/?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx',
-    signer,
-    'https://paymaster.cometh.io/84532?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx'
-  );
+  const rpId = 'sample4337.cometh.io'
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -46,67 +40,95 @@ function App(): React.JSX.Element {
         style={backgroundStyle}>
         <View>
           <View style={{marginTop: 20}}>
-            <Button title={'Predict address'} onPress={() => {
-              setAddress('⌛');
-              SafeUtils.predictAddress('https://base-sepolia.g.alchemy.com/v2/UEwp8FtpdjcL5oekF6CjMzxe1D3768XU', signer)
+            <TextInput
+              style={styles.input}
+              value={userName}
+              onChangeText={(text) => setUserName(text)}
+              placeholder="Type here"
+              autoCapitalize="none"
+            />
+            <Button title={'Create/Get passkey'} onPress={() => {
+              PasskeySigner
+                .create(rpId, userName)
                 .then((result) => {
-                  setAddress('✅ ' + result);
-                })
-                .catch((error) => {
-                  setAddress('❌ error: ' + error);
+                  const account = new SafeAccount(
+                    84532, // needed for android
+                    'https://base-sepolia.g.alchemy.com/v2/UEwp8FtpdjcL5oekF6CjMzxe1D3768XU',
+                    'https://bundler.cometh.io/84532/?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx',
+                    result,
+                    'https://paymaster.cometh.io/84532?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx'
+                  );
+                  setSigner(result);
+                  setSafeAccount(account);
                 });
             }}/>
+            {signer && <Text style={styles.sectionDescription}>✅ Passkey OK !</Text>}
           </View>
-          <Text style={styles.sectionDescription}>Address = {address}</Text>
-          <View style={styles.button}>
-            <Button title={'Send Transaction'} onPress={() => {
-              console.log('Sending User Op');
-              setUserOpHash('⌛');
-              safeAccount.sendUserOperation('0x2f920a66C2f9760f6fE5F49b289322Ddf60f9103', '0x0', '0xaaaa', false).then((result) => {
-                setUserOpHash('✅ ' + result);
-              }).catch((error) => {
-                setUserOpHash('❌ error: ' + error);
-                console.error(error);
-              });
-            }}/>
-          </View>
-          <Text style={styles.sectionDescription}>hash = {userOpHash}</Text>
-          <View style={styles.button}>
-            <Button title={'Get owners'} onPress={() => {
-              setOwners('⌛');
-              safeAccount.getOwners().then((result) => {
-                setOwners('✅ ' + result.join(', '));
-              })
-                .catch((error) => {
-                  setOwners('❌ error: ' + error);
-                });
-            }}/>
-          </View>
-          <Text style={styles.sectionDescription}>Owners = {owners}</Text>
-          <View style={styles.button}>
-            <Button title={'Is deployed ?'} onPress={() => {
-              setIsDeployed('⌛');
-              safeAccount.isDeployed().then((result) => {
-                setIsDeployed(result ? 'true' : 'false');
-              })
-                .catch((error) => {
-                  setIsDeployed('❌ error: ' + error);
-                });
-            }}/>
-          </View>
-          <Text style={styles.sectionDescription}>isDeployed = {isDeployed}</Text>
-          <View style={styles.button}>
-            <Button title={'Add owner'} onPress={() => {
-              setAddOwner('⌛');
-              safeAccount.addOwner('0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E').then((result) => {
-                setAddOwner('✅ ' + result);
-              })
-              .catch((error) => {
-                setAddOwner('❌ error: ' + error);
-              });
-            }}/>
-          </View>
-          <Text style={styles.sectionDescription}>addOwner = {addOwner}</Text>
+          {safeAccount && signer &&
+            <>
+              <View style={{marginTop: 20}}>
+                <Button title={'Predict address'} onPress={() => {
+                  setAddress('⌛');
+                  SafeUtils.predictAddress('https://base-sepolia.g.alchemy.com/v2/UEwp8FtpdjcL5oekF6CjMzxe1D3768XU', signer)
+                    .then((result) => {
+                      setAddress('✅ ' + result);
+                    })
+                    .catch((error) => {
+                      setAddress('❌ error: ' + error);
+                    });
+                }}/>
+              </View>
+              <Text style={styles.sectionDescription}>Address = {address}</Text>
+              <View style={styles.button}>
+                <Button title={'Send Transaction'} onPress={() => {
+                  console.log('Sending User Op');
+                  setUserOpHash('⌛');
+                  safeAccount.sendUserOperation('0x2f920a66C2f9760f6fE5F49b289322Ddf60f9103', '0x0', '0xaaaa', false).then((result) => {
+                    setUserOpHash('✅ ' + result);
+                  }).catch((error) => {
+                    setUserOpHash('❌ error: ' + error);
+                    console.error(error);
+                  });
+                }}/>
+              </View>
+              <Text style={styles.sectionDescription}>hash = {userOpHash}</Text>
+              <View style={styles.button}>
+                <Button title={'Get owners'} onPress={() => {
+                  setOwners('⌛');
+                  safeAccount.getOwners().then((result) => {
+                    setOwners('✅ ' + result.join(', '));
+                  })
+                    .catch((error) => {
+                      setOwners('❌ error: ' + error);
+                    });
+                }}/>
+              </View>
+              <Text style={styles.sectionDescription}>Owners = {owners}</Text>
+              <View style={styles.button}>
+                <Button title={'Is deployed ?'} onPress={() => {
+                  setIsDeployed('⌛');
+                  safeAccount.isDeployed().then((result) => {
+                    setIsDeployed(result ? 'true' : 'false');
+                  })
+                    .catch((error) => {
+                      setIsDeployed('❌ error: ' + error);
+                    });
+                }}/>
+              </View>
+              <Text style={styles.sectionDescription}>isDeployed = {isDeployed}</Text>
+              <View style={styles.button}>
+                <Button title={'Add owner'} onPress={() => {
+                  setAddOwner('⌛');
+                  safeAccount.addOwner('0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E').then((result) => {
+                    setAddOwner('✅ ' + result);
+                  })
+                    .catch((error) => {
+                      setAddOwner('❌ error: ' + error);
+                    });
+                }}/>
+              </View>
+              <Text style={styles.sectionDescription}>addOwner = {addOwner}</Text>
+            </>}
           {/*<Button title={"Sign User Op"} onPress={() => {*/}
           {/*  console.log("Sign User Op")*/}
           {/*  const userOp = {*/}
@@ -160,6 +182,16 @@ const styles = StyleSheet.create({
   },
   highlight: {
     fontWeight: '700',
+  },
+  input: {
+    height: 40,
+    borderColor: 'white',
+    color: 'white',
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    marginBottom: 16,
+    borderRadius: 4,
+
   },
 });
 

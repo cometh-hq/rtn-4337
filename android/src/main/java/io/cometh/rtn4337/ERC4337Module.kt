@@ -308,6 +308,25 @@ class ERC4337Module(val reactContext: ReactApplicationContext) : NativeRTN4337Sp
        }
     }
 
+    override fun createPasskeySigner(
+       rpId: String,
+       userName: String,
+       promise: Promise
+    ) {
+       CoroutineScope(Dispatchers.Main).launch {
+           try {
+               val passkeySigner = PasskeySigner.withSharedSigner(reactContext, rpId, userName)
+               val map: WritableMap = Arguments.createMap()
+               map.putString("x", passkeySigner.passkey.x.toHex())
+               map.putString("y", passkeySigner.passkey.y.toHex())
+               promise.resolve(map)
+           } catch (e: Exception) {
+                Log.e(TAG, "createPasskeySigner error", e)
+                promise.reject(e)
+           }
+       }
+    }
+
     companion object {
         const val NAME = "RTN4337"
     }

@@ -90,6 +90,11 @@ export interface Spec extends TurboModule {
     address?: string,
   ): Promise<Object>
 
+  createPasskeySigner(
+    rpId: string,
+    userName: string,
+  ): Promise<Object>
+
 }
 
 export default TurboModuleRegistry.get<Spec>("RTN4337") as Spec | null;
