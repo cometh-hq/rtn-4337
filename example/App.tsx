@@ -27,7 +27,7 @@ function App(): React.JSX.Element {
   const [signer, setSigner] = React.useState<PasskeySigner | null>(null);
   const [userName, setUserName] = React.useState('passkey_username');
 
-  const rpId = 'sample4337.cometh.io'
+  const rpId = 'sample4337.cometh.io';
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -50,15 +50,16 @@ function App(): React.JSX.Element {
             <Button title={'Create/Get passkey'} onPress={() => {
               PasskeySigner
                 .create(rpId, userName)
-                .then((result) => {
-                  const account = new SafeAccount(
-                    84532, // needed for android
-                    'https://base-sepolia.g.alchemy.com/v2/UEwp8FtpdjcL5oekF6CjMzxe1D3768XU',
-                    'https://bundler.cometh.io/84532/?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx',
-                    result,
-                    'https://paymaster.cometh.io/84532?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx'
+                .then((_signer) => {
+                  const account = new SafeAccount({
+                      chainId: 84532, // needed for android
+                      rpcUrl: 'https://base-sepolia.g.alchemy.com/v2/UEwp8FtpdjcL5oekF6CjMzxe1D3768XU',
+                      bundlerUrl: 'https://bundler.cometh.io/84532/?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx',
+                      signer: _signer,
+                      paymasterUrl:'https://paymaster.cometh.io/84532?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx',
+                    }
                   );
-                  setSigner(result);
+                  setSigner(_signer);
                   setSafeAccount(account);
                 });
             }}/>

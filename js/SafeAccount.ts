@@ -26,13 +26,23 @@ class SafeAccount {
   private config: SafeConfig
 
   constructor(
-    chainId: number,
-    rpcUrl: string,
-    bundlerUrl: string,
-    signer: PasskeySigner | EOASigner,
-    paymasterUrl?: string,
-    address?: string,
-    safeConfig: SafeConfig = defaultConfig
+    {
+      chainId,
+      rpcUrl,
+      bundlerUrl,
+      signer,
+      paymasterUrl,
+      address,
+      safeConfig = defaultConfig
+    }: {
+      chainId: number,
+      rpcUrl: string,
+      bundlerUrl: string,
+      signer: PasskeySigner | EOASigner,
+      paymasterUrl?: string,
+      address?: string,
+      safeConfig?: SafeConfig
+    }
   ) {
     this.chainId = chainId;
     this.rpcUrl = rpcUrl;
@@ -135,6 +145,5 @@ const isValidUserOp = (userOp: UserOp) => {
   if (!isValidHex(userOp.paymasterPostOpGasLimit)) throw new Error("Invalid paymaster post op gas limit")
   if (!isValidHex(userOp.signature)) throw new Error("Invalid signature")
 }
-
 
 export default SafeAccount;
