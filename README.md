@@ -27,18 +27,16 @@ yarn add rtn-4337@github:cometh-hq/rtn-4337
 ### Overview
 
 ```typescript
-const chainId = 84532 // needed for android
-const rpcUrl = "https://base-sepolia.g.alchemy.com/v2/UEwp8FtpdjcL5oekF6CjMzxe1D3768XU"
-const bundlerUrl = "https://bundler.cometh.io/84532/?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx"
-const paymasterUrl = "https://paymaster.cometh.io/84532?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx"
-const signer = {...}
+import {SafeAccount} from 'rtn-4337';
 
 const safeAccount = new SafeAccount(
-  chainId, // needed for android
-  rpcUrl,
-  bundlerUrl,
-  signer,
-  paymasterUrl
+  {
+    chainId: 84532, // needed for android
+    rpcUrl: 'https://base-sepolia.g.alchemy.com/v2/UEwp8FtpdjcL5oekF6CjMzxe1D3768XU',
+    bundlerUrl: 'https://bundler.cometh.io/84532/?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx',
+    signer: {...},
+    paymasterUrl: 'https://paymaster.cometh.io/84532?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx',
+  }
 )
 
 const to = "TO_ADDRESS"
@@ -57,7 +55,7 @@ estimating user operations, and sponsoring gas.
 In this version of the SDK, we provide support for [Safe Accounts](https://safe.global/).
 
 ```typescript
-const safeAccount = new SafeAccount(chainId, rpcUrl, bundlerUrl, signer, paymasterUrl)
+const safeAccount = new SafeAccount({ chainId, rpcUrl, bundlerUrl, signer, paymasterUrl})
 const userOpHash = await safeAccount.sendUserOperation(to, value, data)
 ```
 
@@ -65,17 +63,22 @@ const userOpHash = await safeAccount.sendUserOperation(to, value, data)
 
 ```typescript
 constructor(
-    chainId: number,
-    rpcUrl: string,
-    bundlerUrl: string,
-    signer: PasskeySigner | EOASigner,
-    paymasterUrl?: string,
-    safeConfig: SafeConfig = defaultConfig
-)
+        { chainId, rpcUrl, bundlerUrl, signer, paymasterUrl, address, safeConfig = defaultConfig }: 
+        {
+          chainId: number,
+          rpcUrl: string,
+          bundlerUrl: string,
+          signer: PasskeySigner | EOASigner,
+          paymasterUrl?: string,
+          address?: string,
+          safeConfig?: SafeConfig
+        })
 ```
 
 - **chainId**: Needed for android lib.
+- **signer**: The signer used to sign user operations: EOASigner or PasskeySigner.
 - **paymasterUrl**: If specified, it will be used when preparing the user operation to sponsor gas fees.
+- **address**: If provided, the Safe Account will be initialized with this address.
 - **safeConfig**: If not provided, the default configuration will be used.
 
 ```swift
@@ -123,14 +126,14 @@ There is one notable caveat when using the passkey module with ERC-4337 specific
 In order to bypass this limitation you can use the SafeWebAuthnSharedSigner: a singleton that can be used as a Safe owner.
 For more Infos : [Safe passkey module](https://github.com/safe-global/safe-modules/blob/main/modules/passkey/contracts/4337/README.md#overview)
 
-To sign user operations with a Passkey, provide a passkey signer when creating the Safe Account. The Passkey will be created when the user sends a user operation. If the Passkey doesn't exist for the specified name, the registration process will start, and the user will need to use their biometrics.
+To sign user operations with a Passkey, provide a passkey signer when creating the Safe Account. 
+If the Passkey doesn't exist for the specified name, the registration process will start, and the user will need to use their biometrics.
 
 Then when a request to sign a message is received, the user has to use its biometric to sign the message.
 
 ```typescript
-const signer = { rpId: "sample4337.cometh.io", userName: "my_user" }
-const safeAccount = new SafeAccount(chainId, rpcUrl, bundlerUrl, signer, paymasterUrl)
-
+const signer = await PasskeySigner.create("sample4337.cometh.io", "my_user")
+const safeAccount = new SafeAccount({ chainId, rpcUrl, bundlerUrl, signer, paymasterUrl})
 const userOpHash = await safeAccount.sendUserOperation(to, value, data)
 ```
 
@@ -151,8 +154,7 @@ You can also use an EOASigner to sign user operations. This signer is used to si
 
 ```typescript
 const signer = { privateKey: "xxxxxxxxxxx" }
-const safeAccount = new SafeAccount(chainId, rpcUrl, bundlerUrl, signer, paymasterUrl)
-
+const safeAccount = new SafeAccount({ chainId, rpcUrl, bundlerUrl, signer, paymasterUrl})
 const userOpHash = await safeAccount.sendUserOperation(to, value, data)
 ```
 
