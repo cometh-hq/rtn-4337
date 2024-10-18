@@ -95,6 +95,16 @@ export interface Spec extends TurboModule {
     userName: string,
   ): Promise<Object>
 
+  ethGetUserOperationReceipt(
+    bundlerUrl: string,
+    userOpHash: string,
+  ): Promise<Object>
+
+  ethGetUserOperationByHash(
+    bundlerUrl: string,
+    userOpHash: string,
+  ): Promise<Object>
+
 }
 
 export default TurboModuleRegistry.get<Spec>("RTN4337") as Spec | null;

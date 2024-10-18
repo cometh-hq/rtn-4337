@@ -1,5 +1,5 @@
 import NativeRTN4337 from "./NativeRTN4337";
-import {UserOp} from "./types/UserOp";
+import {UserOperation} from "./types/UserOperation";
 import {PasskeySigner} from "./signer/PasskeySigner";
 import {EOASigner} from "./signer/EOASigner";
 import {SafeConfig, verifyConfig} from "./SafeConfig";
@@ -70,7 +70,7 @@ class SafeAccount {
     );
   }
 
-  signUserOperation(userOp: UserOp): Promise<string> {
+  signUserOperation(userOp: UserOperation): Promise<string> {
     isValidUserOp(userOp);
     return NativeRTN4337.signUserOperation(
       this.chainId, this.rpcUrl, this.bundlerUrl,
@@ -112,7 +112,7 @@ class SafeAccount {
     return NativeRTN4337.addOwner(this.chainId, this.rpcUrl, this.bundlerUrl, owner, this.signer, this.config, this.paymasterUrl, this.address)
   }
 
-  prepareUserOperation(to_address: string, value: string, data: string, delegateCall: boolean = false): Promise<UserOp> {
+  prepareUserOperation(to_address: string, value: string, data: string, delegateCall: boolean = false): Promise<UserOperation> {
     return NativeRTN4337.prepareUserOperation(
       this.chainId, this.rpcUrl, this.bundlerUrl,
       to_address,
@@ -123,12 +123,12 @@ class SafeAccount {
       this.config,
       this.paymasterUrl,
       this.address
-    ).then((result) => result as UserOp)
+    ).then((result) => result as UserOperation)
   }
 
 }
 
-const isValidUserOp = (userOp: UserOp) => {
+const isValidUserOp = (userOp: UserOperation) => {
   if (!isValidEthereumAddress(userOp.sender)) throw new Error("Invalid sender address")
   if (!isValidHex(userOp.nonce)) throw new Error("Invalid nonce")
   if (!isValidEthereumAddress(userOp.factory)) throw new Error("Invalid factory address")

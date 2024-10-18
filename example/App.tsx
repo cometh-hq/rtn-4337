@@ -5,7 +5,7 @@
  * @format
  */
 
-import {PasskeySigner, SafeAccount, SafeUtils} from 'rtn-4337';
+import {Bundler, PasskeySigner, SafeAccount, SafeUtils} from 'rtn-4337';
 import React from 'react';
 import {Button, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, View} from 'react-native';
 
@@ -27,6 +27,8 @@ function App(): React.JSX.Element {
 
   const rpId = 'sample4337.cometh.io';
 
+  const bundler = new Bundler('https://bundler.cometh.io/84532/?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx');
+
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar
@@ -38,6 +40,25 @@ function App(): React.JSX.Element {
         style={backgroundStyle}>
         <View>
           <View style={{marginTop: 20}}>
+            <Button title={'Get Receipt'} onPress={() => {
+              bundler
+                .ethGetUserOperationReceipt('0xa5a6f2aff433b95ecc8ff8985370ee3f868664612af8260aae5c7b1c07f655fc')
+                .then((receipt) => {
+                  console.log('userOpHash', receipt.userOpHash);
+                  console.log('sender', receipt.sender);
+                  console.log('nonce', receipt.nonce);
+                  console.log('actualGasUsed', receipt.actualGasUsed);
+                  console.log('actualGasCost', receipt.actualGasCost);
+                  console.log('success', receipt.success);
+                  console.log('paymaster', receipt.paymaster);
+                  console.log('receipt', receipt.receipt);
+                  console.log('transactionIndex', receipt.transactionIndex);
+                  console.log('logs', receipt.logs);
+                }).catch((error) => {
+                  console.error('cannot get receipt', error);
+                }
+              );
+            }}/>
             <TextInput
               style={styles.input}
               value={userName}
@@ -88,6 +109,7 @@ function App(): React.JSX.Element {
                     '0xaaaa',
                     false
                   ).then((result) => {
+                    console.log('User Op sent', result);
                     setUserOpHash('✅ ' + result);
                   }).catch((error) => {
                     setUserOpHash('❌ error: ' + error);

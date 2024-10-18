@@ -1,5 +1,5 @@
 
-export type UserOp = {
+export type UserOperation = {
   sender: string,
   nonce: string,
   factory: string,

@@ -21,7 +21,10 @@ import io.cometh.android4337.utils.hexToByteArray
 import io.cometh.android4337.utils.toHex
 import io.cometh.android4337.UserOperation
 import io.cometh.android4337.safe.SafeConfig
+import io.cometh.android4337.bundler.response.UserOperationReceipt
 
+import org.web3j.protocol.core.methods.response.Log
+import org.web3j.protocol.core.methods.response.TransactionReceipt
 import org.web3j.protocol.http.HttpService
 import org.web3j.crypto.Credentials
 
@@ -29,8 +32,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
-import android.util.Log
 
 
 class ERC4337Module(val reactContext: ReactApplicationContext) : NativeRTN4337Spec(reactContext) {
@@ -66,6 +67,7 @@ class ERC4337Module(val reactContext: ReactApplicationContext) : NativeRTN4337Sp
                   promise.resolve(hash)
               }
             } catch (e: Exception) {
+              android.util.Log.e(TAG, "sendUserOperation error", e)
               promise.reject(e)
             }
         }
@@ -88,12 +90,7 @@ class ERC4337Module(val reactContext: ReactApplicationContext) : NativeRTN4337Sp
         if (signer.hasKey("rpId")) {
             val rpId = signer.getString("rpId")!!
             val userName = signer.getString("userName")!!
-            //val shared = signer.getBoolean("shared") ?: true
-            //if (shared) {
             return PasskeySigner.withSharedSigner(reactContext, rpId, userName)
-            //} else {
-            //throw Exception("Not implemented")
-            //}
         } else {
             val privateKey = signer.getString("privateKey")!!
             return EOASigner(Credentials.create(privateKey))
@@ -150,12 +147,10 @@ class ERC4337Module(val reactContext: ReactApplicationContext) : NativeRTN4337Sp
                 val safeAccount = withContext(Dispatchers.IO) {
                     getSafeAccount(address, s, rpcService, bundlerClient, chainId.toInt(), null, safeConfig)
                 }
-                Log.i(TAG, "signUserOperation: $userOperation")
                 val result = safeAccount.signUserOperation(userOperation)
-                Log.i(TAG, "signUserOperation result=$result")
                 promise.resolve(result.toHex())
             } catch (e: Exception) {
-                Log.e(TAG, "signUserOperation error", e)
+                android.util.Log.e(TAG, "signUserOperation error", e)
                 promise.reject(e)
             }
         }
@@ -173,13 +168,13 @@ class ERC4337Module(val reactContext: ReactApplicationContext) : NativeRTN4337Sp
         CoroutineScope(Dispatchers.Main).launch {
             val rpcService = HttpService(rpcUrl)
             try {
-                val signer = getSigner(signer)
+                val s = getSigner(signer)
                 val address = withContext(Dispatchers.IO) {
-                    SafeAccount.predictAddress(signer, rpcService)
+                    SafeAccount.predictAddress(s, rpcService)
                 }
                 promise.resolve(address)
             } catch (e: Exception) {
-                Log.e(TAG, "predictAddress error", e)
+                android.util.Log.e(TAG, "predictAddress error", e)
                 promise.reject(e)
             }
         }
@@ -196,14 +191,14 @@ class ERC4337Module(val reactContext: ReactApplicationContext) : NativeRTN4337Sp
     ) {
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                val signer = getSigner(signer)
+                val s = getSigner(signer)
                 val owners = withContext(Dispatchers.IO) {
-                    val safeAccount = getSafeAccount(address, signer, HttpService(rpcUrl), SimpleBundlerClient(HttpService(bundlerUrl)), chainId.toInt(), null, getSafeConfig(config))
+                    val safeAccount = getSafeAccount(address, s, HttpService(rpcUrl), SimpleBundlerClient(HttpService(bundlerUrl)), chainId.toInt(), null, getSafeConfig(config))
                     safeAccount.getOwners() ?: emptyList()
                 }
                 promise.resolve(owners.map { it.toString() }.toReadableArray())
             } catch (e: Exception) {
-                Log.e(TAG, "getOwners error", e)
+                android.util.Log.e(TAG, "getOwners error", e)
                 promise.reject(e)
             }
        }
@@ -220,14 +215,14 @@ class ERC4337Module(val reactContext: ReactApplicationContext) : NativeRTN4337Sp
     ) {
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                val signer = getSigner(signer)
+                val s = getSigner(signer)
                 val isDeployed = withContext(Dispatchers.IO) {
-                    val safeAccount = getSafeAccount(address, signer, HttpService(rpcUrl), SimpleBundlerClient(HttpService(bundlerUrl)), chainId.toInt(), null, getSafeConfig(config))
+                    val safeAccount = getSafeAccount(address, s, HttpService(rpcUrl), SimpleBundlerClient(HttpService(bundlerUrl)), chainId.toInt(), null, getSafeConfig(config))
                     safeAccount.isDeployed()
                 }
                 promise.resolve(isDeployed)
             } catch (e: Exception) {
-                Log.e(TAG, "isDeployed error", e)
+                android.util.Log.e(TAG, "isDeployed error", e)
                 promise.reject(e)
             }
        }
@@ -246,15 +241,15 @@ class ERC4337Module(val reactContext: ReactApplicationContext) : NativeRTN4337Sp
     ) {
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                val signer = getSigner(signer)
+                val s = getSigner(signer)
                 val paymasterClient = if (paymasterUrl != null) PaymasterClient(paymasterUrl) else null
                 val hash = withContext(Dispatchers.IO) {
-                    val safeAccount = getSafeAccount(address, signer, HttpService(rpcUrl), SimpleBundlerClient(HttpService(bundlerUrl)), chainId.toInt(), paymasterClient, getSafeConfig(config))
+                    val safeAccount = getSafeAccount(address, s, HttpService(rpcUrl), SimpleBundlerClient(HttpService(bundlerUrl)), chainId.toInt(), paymasterClient, getSafeConfig(config))
                     safeAccount.addOwner(owner.hexToAddress())
                 }
                 promise.resolve(hash)
             } catch (e: Exception) {
-                Log.e(TAG, "addOwner error", e)
+                android.util.Log.e(TAG, "addOwner error", e)
                 promise.reject(e)
             }
        }
@@ -303,6 +298,7 @@ class ERC4337Module(val reactContext: ReactApplicationContext) : NativeRTN4337Sp
                   promise.resolve(map)
               }
             } catch (e: Exception) {
+              android.util.Log.e(TAG, "prepareUserOperation error", e)
               promise.reject(e)
             }
        }
@@ -321,11 +317,93 @@ class ERC4337Module(val reactContext: ReactApplicationContext) : NativeRTN4337Sp
                map.putString("y", passkeySigner.passkey.y.toHex())
                promise.resolve(map)
            } catch (e: Exception) {
-                Log.e(TAG, "createPasskeySigner error", e)
+                android.util.Log.e(TAG, "createPasskeySigner error", e)
                 promise.reject(e)
            }
        }
     }
+
+    override fun ethGetUserOperationReceipt(
+       bundlerUrl: String,
+       userOpHash: String,
+       promise: Promise
+    ) {
+         CoroutineScope(Dispatchers.Main).launch {
+              try {
+                val resp = withContext(Dispatchers.IO) {
+                     SimpleBundlerClient(HttpService(bundlerUrl)).ethGetUserOperationReceipt(userOpHash).send()
+                }
+                val receipt = resp.result
+                if (receipt == null) {
+                    promise.resolve(null)
+                } else {
+                    promise.resolve(receipt.mapToWritableMap())
+                }
+              } catch (e: Exception) {
+                 android.util.Log.e(TAG, "ethGetUserOperationReceipt error", e)
+                 promise.reject(e)
+              }
+         }
+    }
+
+
+    override fun ethGetUserOperationByHash(
+        bundlerUrl: String,
+        userOpHash: String,
+        promise: Promise
+    ) {
+
+    }
+
+    private fun UserOperationReceipt.mapToWritableMap(): WritableMap {
+        val map: WritableMap = Arguments.createMap()
+        map.putString("userOpHash", userOpHash)
+        map.putString("sender", sender)
+        map.putString("nonce", nonce)
+        map.putString("actualGasUsed", actualGasUsed)
+        map.putString("actualGasCost", actualGasCost)
+        map.putString("success", success)
+        map.putString("paymaster", paymaster)
+        map.putString("paymaster", paymaster)
+        map.putMap("receipt", receipt.mapToWritableMap())
+        map.putArray("logs", logs.map { it.mapToWritableMap() }.toReadableArray())
+        return map
+    }
+
+    private fun TransactionReceipt.mapToWritableMap(): WritableMap {
+        val map: WritableMap = Arguments.createMap()
+        map.putString("transactionHash", transactionHash)
+        map.putString("transactionIndex", getTransactionIndexRaw())
+        map.putString("blockHash", blockHash)
+        map.putString("blockNumber", getBlockNumberRaw())
+        map.putString("cumulativeGasUsed", getCumulativeGasUsedRaw())
+        map.putString("gasUsed", getGasUsedRaw())
+        map.putString("contractAddress", contractAddress)
+        map.putString("root", root)
+        map.putString("status", status)
+        map.putString("from", from)
+        map.putString("to", to)
+        map.putArray("logs", logs.map { it.mapToWritableMap() }.toReadableArray())
+        map.putString("logsBloom", logsBloom)
+        map.putString("revertReason", revertReason)
+        map.putString("type", type)
+        map.putString("effectiveGasPrice", effectiveGasPrice)
+        return map
+    }
+
+    private fun Log.mapToWritableMap(): WritableMap {
+        val map: WritableMap = Arguments.createMap()
+        map.putString("logIndex", getLogIndexRaw())
+        map.putString("transactionIndex", getTransactionIndexRaw())
+        map.putString("transactionHash", transactionHash)
+        map.putString("blockHash", blockHash)
+        map.putString("blockNumber", getBlockNumberRaw())
+        map.putString("address", address)
+        map.putString("data", data)
+        map.putArray("topics", topics.toReadableArray())
+        return map
+    }
+
 
     companion object {
         const val NAME = "RTN4337"
