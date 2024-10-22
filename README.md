@@ -28,14 +28,13 @@ yarn add rtn-4337@github:cometh-hq/rtn-4337
 
 ```typescript
 import {SafeAccount} from 'rtn-4337';
-
 const safeAccount = new SafeAccount(
   {
     chainId: 84532, // needed for android
-    rpcUrl: 'https://base-sepolia.g.alchemy.com/v2/UEwp8FtpdjcL5oekF6CjMzxe1D3768XU',
-    bundlerUrl: 'https://bundler.cometh.io/84532/?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx',
+    rpcUrl: 'https://base-sepolia.g.alchemy.com/v2/ALCHEMY_KEY',
+    bundlerUrl: 'https://bundler.cometh.io/84532/?apikey=COMETH_API_KEY',
     signer: {...},
-    paymasterUrl: 'https://paymaster.cometh.io/84532?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx',
+    paymasterUrl: 'https://paymaster.cometh.io/84532?apikey=COMETH_API_KEY',
   }
 )
 
@@ -150,7 +149,7 @@ Not yet supported.
 
 You can also use an EOASigner to sign user operations. This signer is used to sign user operations with an EOA.
 
-**NOTE: TODO**.
+**NOTE: JUST FOR TESTING PURPOSE NOT FOR PRODUCTION**.
 
 ```typescript
 const signer = { privateKey: "xxxxxxxxxxx" }
