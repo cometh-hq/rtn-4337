@@ -1,0 +1,9 @@
+{
+  "platforms": ["ios", "android"],
+  "ios": {
+    "modules": ["rtn4337Module"]
+  },
+  "android": {
+    "modules": ["io.cometh.rtn4337.rtn4337Module"]
+  }
+}

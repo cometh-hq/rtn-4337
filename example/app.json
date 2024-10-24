@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "rtn-4337-example",
+    "slug": "rtn-4337-example",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "io.cometh.rtn4337.example",
+      "useFrameworks": "static",
+      "deploymentTarget": "15.0",
+      "associatedDomains": [
+        "applinks:passkey.startapp.nc",
+        "webcredentials:passkey.startapp.nc"
+      ]
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "io.cometh.rtn4337.example",
+      "permissions": ["android.permission.INTERNET"]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}

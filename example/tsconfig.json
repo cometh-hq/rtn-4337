@@ -1,0 +1,10 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "rtn-4337": ["../src/index"],
+      "rtn-4337/*": ["../src/*"]
+    }
+  }
+}
