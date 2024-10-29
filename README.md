@@ -19,16 +19,43 @@ We currently support the following features:
 
 To add `rtn-4337` to your React Native project, install the package directly from the GitHub repository:
 
-### Add the package to your npm dependencies
 ```
-yarn add rtn-4337@github:cometh-hq/rtn-4337
+npm install cometh-hq/rtn-4337#0.1.0
 ```
-```
-npm install rtn-4337
-```
+
 ### Configure for iOS
 
-Run `npx pod-install` after installing the npm package.
+1. Add the following lines to your `Podfile`:
+
+```
+source 'https://github.com/cometh-hq/pod-specs' # Needed to get the latest version of argentlabs/web3.swift with Cocoapods
+source 'https://github.com/CocoaPods/Specs.git'
+use_modular_headers!
+```
+
+2. Set your deployment target to `15.6`.
+
+If you're using expo, you can add this line to your `Podfile.properties.json`:
+
+```
+"ios.deploymentTarget": "15.6" 
+```
+
+or change it via Xcode.
+
+3. Use statically linked frameworks
+
+If expo, add this line to your `Podfile.properties.json`:
+
+```
+"ios.useFrameworks": "static"
+```
+
+4. Then run CocoaPods installation:
+
+```
+npx pod-install
+``` 
 
 ## Getting Started
 ### Overview
