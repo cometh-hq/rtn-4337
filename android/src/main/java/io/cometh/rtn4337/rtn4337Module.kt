@@ -141,7 +141,8 @@ private suspend fun getSigner(context: Context, signer: Map<String, Any>): Signe
 
 // map useropeartionreceip to map
 private fun UserOperationReceipt.toMap(): Map<String, Any?> {
-    return mapOf("userOpHash" to userOpHash,
+    return mapOf(
+        "userOpHash" to userOpHash,
         "sender" to sender,
         "nonce" to nonce,
         "actualGasUsed" to actualGasUsed,
@@ -149,7 +150,8 @@ private fun UserOperationReceipt.toMap(): Map<String, Any?> {
         "success" to success,
         "paymaster" to paymaster,
         "receipt" to receipt.toMap(),
-        "logs" to logs.map { it.toMap() })
+        "logs" to logs.map { it.toMap() }
+    )
 }
 
 private fun TransactionReceipt.toMap(): Map<String, Any?> {

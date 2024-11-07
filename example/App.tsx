@@ -55,13 +55,13 @@ export default function App() {
               onPress={() => {
                 bundler
                   .ethGetUserOperationReceipt(
-                    "0xa5a6f2aff433b95ecc8ff8985370ee3f868664612af8260aae5c7b1c07f655fc",
+                    "0x5f2c9267b1d7472fd2e6decefda916024bc8aafb38f0cca40ca7e21c7509e22b",
                   )
                   .then((receipt) => {
                     console.log("receipt", JSON.stringify(receipt));
                   })
                   .catch((error) => {
-                    console.error("cannot get receipt", error);
+                    console.error("cannot get userop receipt", error);
                   });
               }}
             />
@@ -70,13 +70,13 @@ export default function App() {
               onPress={() => {
                 bundler
                   .ethGetUserOperationByHash(
-                    "0xa5a6f2aff433b95ecc8ff8985370ee3f868664612af8260aae5c7b1c07f655fc",
+                    "0x5f2c9267b1d7472fd2e6decefda916024bc8aafb38f0cca40ca7e21c7509e22b",
                   )
                   .then((receipt) => {
                     console.log("receipt", JSON.stringify(receipt));
                   })
                   .catch((error) => {
-                    console.error("cannot get receipt", error);
+                    console.error("cannot get user op by hash", error);
                   });
               }}
             />

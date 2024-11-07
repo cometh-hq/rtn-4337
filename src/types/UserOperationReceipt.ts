@@ -7,7 +7,6 @@ type UserOperationReceipt = {
   success: string;
   paymaster: string;
   receipt: TransactionReceipt;
-  transactionIndex: string;
   logs: Log[];
 };
 
@@ -19,11 +18,12 @@ type TransactionReceipt = {
   cumulativeGasUsed: string;
   gasUsed: string;
   contractAddress: string;
-  root: string;
   status: string;
   from: string;
   to: string;
   logs: Log[];
+  logsBloom: string;
+  effectiveGasPrice: string;
 };
 
 type Log = {

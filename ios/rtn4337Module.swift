@@ -200,7 +200,7 @@ extension [String: String] {
 
 extension GetUserOperationReceiptResponse {
     public func toDictionary() -> [String: Any?] {
-        var dict: [String: Any?] = [
+        return [
             "userOpHash": userOpHash,
             "sender": sender,
             "nonce": nonce,
@@ -211,16 +211,20 @@ extension GetUserOperationReceiptResponse {
             "receipt": receipt.toDictionary(),
             "paymaster": paymaster
         ]
-        return dict
     }
 }
 
 extension Log {
     public func toDictionary() -> [String: Any] {
         return [
+            "logIndex": logIndex,
+            "transactionIndex": transactionIndex,
+            "transactionHash": transactionHash,
+            "blockHash": blockHash,
+            "blockNumber": blockNumber,
             "address": address,
             "data": data,
-            "topics": topics
+            "topics": topics,
         ]
     }
 }
@@ -228,12 +232,19 @@ extension Log {
 extension Receipt {
     public func toDictionary() -> [String: Any?] {
         return [
-            "status": status,
-            "contractAddress": contractAddress,
+            "transactionHash": transactionHash,
+            "transactionIndex": transactionIndex,
+            "blockHash": blockHash,
+            "blockNumber": blockNumber,
             "cumulativeGasUsed": cumulativeGasUsed,
             "gasUsed": gasUsed,
-            "logsBloom": logsBloom,
+            "contractAddress": contractAddress,
+            "status": status,
+            "from": from,
+            "to": to,
             "logs": logs.map { $0.toDictionary() },
+            "logsBloom": logsBloom,
+            "effectiveGasPrice": effectiveGasPrice,
         ]
     }
 }
