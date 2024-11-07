@@ -60,7 +60,11 @@ public class rtn4337Module: Module {
         AsyncFunction("sendUserOperation") { (params: CommonParams, to: String, value: String, data: String, delegateCall: Bool) -> String in
             do {
                 let safeAccount = try await getSafeAccount(params: params)
-                let userOpHash = try await safeAccount.sendUserOperation(to: EthereumAddress(to))
+                let userOpHash = try await safeAccount.sendUserOperation(
+                    to: EthereumAddress(to),
+                    value: BigUInt(hex: value)!,
+                    data: data.web3.hexData!
+                )
                 return userOpHash
             } catch let error as EthereumClientError {
                 var message = ""
