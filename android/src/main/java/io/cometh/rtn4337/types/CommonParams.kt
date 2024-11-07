@@ -27,7 +27,7 @@ class CommonParams : Record {
 
 }
 
-fun CommonParams.verifyMandatoryUrls() {
+fun CommonParams.verifyParams() {
     requireNotNull(rpcUrl) { "rpcUrl is required" }
     requireNotNull(bundlerUrl) { "bundlerUrl is required" }
     requireNotNull(config) { "config is required" }

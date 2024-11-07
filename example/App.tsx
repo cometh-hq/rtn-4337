@@ -91,20 +91,24 @@ export default function App() {
               title="Create/Get passkey"
               onPress={() => {
                 reset();
-                PasskeySigner.create(rpId, userName).then((signer) => {
-                  const account = new SafeAccount({
-                    chainId: 84532, // needed for android
-                    rpcUrl:
-                      "https://base-sepolia.g.alchemy.com/v2/UEwp8FtpdjcL5oekF6CjMzxe1D3768XU",
-                    bundlerUrl:
-                      "https://bundler.cometh.io/84532?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx",
-                    signer,
-                    paymasterUrl:
-                      "https://paymaster.cometh.io/84532?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx",
+                PasskeySigner.create(rpId, userName)
+                  .then((signer) => {
+                    const account = new SafeAccount({
+                      chainId: 84532, // needed for android
+                      rpcUrl:
+                        "https://base-sepolia.g.alchemy.com/v2/UEwp8FtpdjcL5oekF6CjMzxe1D3768XU",
+                      bundlerUrl:
+                        "https://bundler.cometh.io/84532?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx",
+                      signer,
+                      paymasterUrl:
+                        "https://paymaster.cometh.io/84532?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx",
+                    });
+                    setPasskeySigner(signer);
+                    setSafeAccount(account);
+                  })
+                  .catch((error) => {
+                    console.error("cannot create passkey", error);
                   });
-                  setPasskeySigner(signer);
-                  setSafeAccount(account);
-                });
               }}
             />
             {passkeySigner && (
@@ -164,12 +168,14 @@ export default function App() {
                     console.log("Sending User Op");
                     setUserOpHash("⌛");
                     safeAccount
-                      .sendUserOperation(
-                        "0x2f920a66C2f9760f6fE5F49b289322Ddf60f9103",
-                        "0x0",
-                        "0xaaaa",
-                        false,
-                      )
+                      .sendUserOperation([
+                        {
+                          to: "0x2f920a66C2f9760f6fE5F49b289322Ddf60f9103",
+                          value: "0x0",
+                          data: "0xaaaa",
+                          delegateCall: false,
+                        },
+                      ])
                       .then((result) => {
                         console.log("User Op sent", result);
                         setUserOpHash("✅ " + result);
@@ -201,6 +207,37 @@ export default function App() {
                 }}
               /> */}
               </View>
+              <Button
+                title="Send Multi Transaction"
+                onPress={() => {
+                  console.log("Sending User Op");
+                  setUserOpHash("⌛");
+                  safeAccount
+                    .sendUserOperation([
+                      {
+                        to: "0x4FbF9EE4B2AF774D4617eAb027ac2901a41a7b5F",
+                        value: "0x0",
+                        data: "0x06661abd",
+                      },
+                      {
+                        to: "0x2f920a66C2f9760f6fE5F49b289322Ddf60f9103",
+                      },
+                      {
+                        to: "0x2f920a66C2f9760f6fE5F49b289322Ddf60f9103",
+                        data: "0xaaaa",
+                      },
+                    ])
+                    .then((result) => {
+                      console.log("User Op sent", result);
+                      setUserOpHash("✅ " + result);
+                    })
+                    .catch((error) => {
+                      setUserOpHash("❌ error: " + error);
+                      console.error("error=" + JSON.stringify(error));
+                      console.error(error);
+                    });
+                }}
+              />
               <Text style={styles.sectionDescription}>hash = {userOpHash}</Text>
               <View style={styles.button}>
                 <Button

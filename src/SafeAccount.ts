@@ -5,6 +5,13 @@ import { EOASigner } from "./signer/EOASigner";
 import { PasskeySigner } from "./signer/PasskeySigner";
 import { UserOperation } from "./types/UserOperation";
 
+type TransactionParams = {
+  to: string;
+  value?: string;
+  data?: string;
+  delegateCall?: boolean;
+};
+
 class SafeAccount {
   private chainId: number;
   private address?: string;
@@ -63,19 +70,54 @@ class SafeAccount {
     };
   }
 
-  sendUserOperation(
-    to_address: string,
-    value: string,
-    data: string,
-    delegateCall: boolean = false,
-  ): Promise<string> {
-    return rtn4337Module.sendUserOperation(
-      this.getCommonParams(),
-      to_address,
-      value,
-      data,
-      delegateCall,
-    );
+  // sendUserOperation(
+  //   to_address: string,
+  //   value: string,
+  //   data: string,
+  //   delegateCall: boolean = false,
+  // ): Promise<string> {
+  //   return rtn4337Module.sendUserOperation(
+  //     this.getCommonParams(),
+  //     to_address,
+  //     value,
+  //     data,
+  //     delegateCall,
+  //   );
+  // }
+
+  sendUserOperation(params: TransactionParams[]): Promise<string> {
+    if (params.length === 0) {
+      throw new Error("No transaction params provided");
+    }
+
+    // check if all params are valid and set default values
+    for (let i = 0; i < params.length; i++) {
+      if (!isValidEthereumAddress(params[i].to))
+        throw new Error("Invalid to address");
+
+      if (!params[i].value) params[i].value = "0x0";
+      else if (!isValidHex(params[i].value!))
+        throw new Error("Invalid value, must be a valid hex string");
+      if (!params[i].data) params[i].data = "0x";
+      else if (!isValidHex(params[i].data!))
+        throw new Error("Invalid data, must be a valid hex string");
+      if (!params[i].delegateCall) params[i].delegateCall = false;
+    }
+
+    if (params.length === 1) {
+      return rtn4337Module.sendUserOperation(
+        this.getCommonParams(),
+        params[0].to,
+        params[0].value,
+        params[0].data,
+        params[0].delegateCall,
+      );
+    } else {
+      return rtn4337Module.sendMultiSendUserOperation(
+        this.getCommonParams(),
+        params,
+      );
+    }
   }
 
   signUserOperation(userOp: UserOperation): Promise<string> {
@@ -119,27 +161,6 @@ class SafeAccount {
   }
 }
 
-/*
-    public var sender: String
-    public var nonce: String
-    public var factory: String?
-    public var factoryData: String?
-    public var callData: String
-    
-    public var preVerificationGas: String
-    public var callGasLimit: String
-    public var verificationGasLimit: String
-    
-    public var maxFeePerGas: String
-    public var maxPriorityFeePerGas: String
-    
-    public var paymaster: String?
-    public var paymasterData: String?
-    public var paymasterVerificationGasLimit: String?
-    public var paymasterPostOpGasLimit: String?
-
-    public var signature: String
-*/
 const isValidUserOp = (userOp: UserOperation) => {
   // check if sender not null/undefined
   if (!userOp.sender || !isValidEthereumAddress(userOp.sender))

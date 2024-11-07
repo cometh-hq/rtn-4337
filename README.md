@@ -20,7 +20,7 @@ We currently support the following features:
 To add `rtn-4337` to your React Native project, install the package directly from the GitHub repository:
 
 ```
-npm install cometh-hq/rtn-4337#0.1.0
+npm install cometh-hq/rtn-4337#0.1.1
 ```
 
 ### Configure for iOS
@@ -76,7 +76,7 @@ const safeAccount = new SafeAccount(
 const to = "TO_ADDRESS"
 const value = "0x0"
 const data = "0xaaaa"
-const hash = await safeAccount.sendUserOperation(to, value, data)
+const hash = await safeAccount.sendUserOperation([{to, value, data}])
 ```
 
 ### Smart Account
@@ -90,7 +90,7 @@ In this version of the SDK, we provide support for [Safe Accounts](https://safe.
 
 ```typescript
 const safeAccount = new SafeAccount({ chainId, rpcUrl, bundlerUrl, signer, paymasterUrl})
-const userOpHash = await safeAccount.sendUserOperation(to, value, data)
+const userOpHash = await safeAccount.sendUserOperation([{to, value, data}])
 ```
 
 ##### Constructor
@@ -115,7 +115,7 @@ constructor(
 - **address**: If provided, the Safe Account will be initialized with this address.
 - **safeConfig**: If not provided, the default configuration will be used.
 
-```swift
+```typescript
 // these values are from the safe deployments repo
 (https://github.com/safe-global/safe-modules-deployments/tree/main/src/assets/safe-4337-module)
 const defaultConfig: SafeConfig = {
@@ -135,6 +135,18 @@ const defaultConfig: SafeConfig = {
 > - [android4337](https://github.com/cometh-hq/android4337/blob/main/android4337/src/main/java/io/cometh/android4337/gasprice/RPCGasEstimator.kt)
 > - [swift4337](https://github.com/cometh-hq/swift4337/blob/main/Sources/swift4337/gas-estimator/RPCGasEstimator.swift)
 
+
+##### Multi send
+
+We provide a method to send multiple transactions in a single user operation using multisend ([contract](https://github.com/safe-global/safe-smart-account/blob/main/contracts/libraries/MultiSend.sol)).
+When you send more than one transaction, we use the multisend contract.
+
+```typescript
+const userOpHash = await safeAccount.sendUserOperation([
+  { to: "<address1>", value: "<value1>", data: "<data1>" },
+  { to: "<address2>", value: "<value2>", data: "<data2>" },
+  ])
+```
 
 ### Signer
 
@@ -168,7 +180,7 @@ Then when a request to sign a message is received, the user has to use its biome
 ```typescript
 const signer = await PasskeySigner.create("sample4337.cometh.io", "my_user")
 const safeAccount = new SafeAccount({ chainId, rpcUrl, bundlerUrl, signer, paymasterUrl})
-const userOpHash = await safeAccount.sendUserOperation(to, value, data)
+const userOpHash = await safeAccount.sendUserOperation([{to, value, data}])
 ```
 
 This will init a safe with a Passkey Signer using the Safe WebAuthn Shared Signer contract as owner.
@@ -189,7 +201,7 @@ You can also use an EOASigner to sign user operations. This signer is used to si
 ```typescript
 const signer = { privateKey: "xxxxxxxxxxx" }
 const safeAccount = new SafeAccount({ chainId, rpcUrl, bundlerUrl, signer, paymasterUrl})
-const userOpHash = await safeAccount.sendUserOperation(to, value, data)
+const userOpHash = await safeAccount.sendUserOperation([{to, value, data}])
 ```
 
 ### RPC, Bundler and Paymaster URLs

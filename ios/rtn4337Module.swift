@@ -17,11 +17,11 @@ public class rtn4337Module: Module {
         
         AsyncFunction("createPasskeySigner") { (rpId: String, userName: String) -> [String: String] in
             do {
-            let signer = try await SafePasskeySigner(domain:rpId, name:userName)
-            return [
-                "publicX": signer.publicX.web3.hexString,
-                "publicY": signer.publicY.web3.hexString
-            ]
+                let signer = try await SafePasskeySigner(domain:rpId, name:userName)
+                return [
+                    "publicX": signer.publicX.web3.hexString,
+                    "publicY": signer.publicY.web3.hexString
+                ]
             } catch {
                 throw Rtn4337Exception(error.localizedDescription)
             }
@@ -31,12 +31,12 @@ public class rtn4337Module: Module {
         
         AsyncFunction("ethGetUserOperationReceipt") { (bundlerUrl: String, userOpHash: String) -> [String: Any?]? in
             do {
-            guard let bundlerUrl = URL(string: bundlerUrl) else {
-                throw Rtn4337Exception("Invalid bundler URL")
-            }
-            let bundler = BundlerClient(url: bundlerUrl)
-            let resp = try await bundler.eth_getUserOperationReceipt(userOpHash)
-            return resp?.toDictionary()
+                guard let bundlerUrl = URL(string: bundlerUrl) else {
+                    throw Rtn4337Exception("Invalid bundler URL")
+                }
+                let bundler = BundlerClient(url: bundlerUrl)
+                let resp = try await bundler.eth_getUserOperationReceipt(userOpHash)
+                return resp?.toDictionary()
             } catch {
                 throw Rtn4337Exception(error.localizedDescription)
             }
@@ -44,12 +44,12 @@ public class rtn4337Module: Module {
         
         AsyncFunction("ethGetUserOperationByHash") { (bundlerUrl: String, userOpHash: String) -> [String: Any?]? in
             do {
-            guard let bundlerUrl = URL(string: bundlerUrl) else {
-                throw Rtn4337Exception("Invalid bundler URL")
-            }
-            let bundler = BundlerClient(url: bundlerUrl)
-            let resp = try await bundler.eth_getUserOperationByHash(userOpHash)
-            return resp?.toDictionary()
+                guard let bundlerUrl = URL(string: bundlerUrl) else {
+                    throw Rtn4337Exception("Invalid bundler URL")
+                }
+                let bundler = BundlerClient(url: bundlerUrl)
+                let resp = try await bundler.eth_getUserOperationByHash(userOpHash)
+                return resp?.toDictionary()
             } catch {
                 throw Rtn4337Exception(error.localizedDescription)
             }
@@ -77,14 +77,36 @@ public class rtn4337Module: Module {
             }
         }
         
+        AsyncFunction("sendMultiSendUserOperation") { (params: CommonParams, txParams: [TxParamsRecord]) -> String in
+            do {
+                let safeAccount = try await getSafeAccount(params: params)
+                let params = txParams.compactMap{ record in
+                    return TransactionParams(
+                        to: EthereumAddress(record.to!),
+                        value: BigUInt(record.value!) ?? BigUInt(0),
+                        data: record.data?.web3.hexData ?? Data()
+                    )
+                }
+                return try await safeAccount.sendUserOperation(params)
+            } catch let error as EthereumClientError {
+                var message = ""
+                if case .executionError(let jSONRPCErrorDetail) = error {
+                    message = jSONRPCErrorDetail.description
+                }
+                throw Rtn4337Exception("cannot send user op: \(message)")
+            } catch {
+                throw Rtn4337Exception(error.localizedDescription)
+            }
+        }
+        
         AsyncFunction("predictAddress") { (chainId: Int, rpcUrl: String, signer: [String: Any], safeConfig: [String: String]) -> String in
             do {
-            guard let rpcUrl = URL(string: rpcUrl) else {
-                throw Rtn4337Exception("Invalid RPC URL")
-            }
-            let rpc = EthereumHttpClient(url: rpcUrl, network: .custom(String(chainId)))
-            let signer = try await getSigner(signer: signer, rpc: rpc)
-            return try await SafeAccount.predictAddress(signer: signer, rpc: rpc, safeConfig: safeConfig.toSafeConfig()).asString()
+                guard let rpcUrl = URL(string: rpcUrl) else {
+                    throw Rtn4337Exception("Invalid RPC URL")
+                }
+                let rpc = EthereumHttpClient(url: rpcUrl, network: .custom(String(chainId)))
+                let signer = try await getSigner(signer: signer, rpc: rpc)
+                return try await SafeAccount.predictAddress(signer: signer, rpc: rpc, safeConfig: safeConfig.toSafeConfig()).asString()
             } catch {
                 throw Rtn4337Exception(error.localizedDescription)
             }
@@ -92,9 +114,9 @@ public class rtn4337Module: Module {
         
         AsyncFunction("getOwners") { (params: CommonParams) -> [String] in
             do {
-            let safeAccount = try await getSafeAccount(params: params)
-            let owners = try await safeAccount.getOwners()
-            return owners.map { $0.asString() }
+                let safeAccount = try await getSafeAccount(params: params)
+                let owners = try await safeAccount.getOwners()
+                return owners.map { $0.asString() }
             } catch {
                 throw Rtn4337Exception(error.localizedDescription)
             }

@@ -4,7 +4,7 @@ import android.content.Context
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import io.cometh.android4337.UserOperation
+import io.cometh.android4337.TransactionParams
 import io.cometh.android4337.bundler.SimpleBundlerClient
 import io.cometh.android4337.bundler.response.UserOperationByHash
 import io.cometh.android4337.bundler.response.UserOperationReceipt
@@ -19,13 +19,13 @@ import io.cometh.android4337.utils.hexToAddress
 import io.cometh.android4337.utils.hexToBigInt
 import io.cometh.android4337.utils.toHex
 import io.cometh.rtn4337.types.CommonParams
+import io.cometh.rtn4337.types.TxParamsRecord
 import io.cometh.rtn4337.types.UserOperationRecord
 import io.cometh.rtn4337.types.toUserOp
-import io.cometh.rtn4337.types.verifyMandatoryUrls
+import io.cometh.rtn4337.types.verifyParams
 import org.web3j.crypto.Credentials
 import org.web3j.protocol.core.methods.response.TransactionReceipt
 import org.web3j.protocol.http.HttpService
-import org.web3j.utils.Async
 
 class rtn4337Module : Module() {
     override fun definition() = ModuleDefinition {
@@ -50,6 +50,20 @@ class rtn4337Module : Module() {
                 data = data.toByteArray(),
                 delegateCall = delegateCall
             )
+        }
+
+        AsyncFunction("sendMultiSendUserOperation") Coroutine { params: CommonParams, txParams: List<TxParamsRecord> ->
+            return@Coroutine getSafeAccount(appContext.reactContext!!, params)
+                .sendUserOperation(
+                    txParams.map {
+                        it.verifyParams()
+                        TransactionParams(
+                            to = it.to!!,
+                            value = it.value ?: "0x0",
+                            data = it.data ?: "0x0"
+                        )
+                    }
+                )
         }
 
         AsyncFunction("predictAddress") Coroutine { chainId: Int, rpcUrl: String, signer: Map<String, Any>, safeConfig: Map<String, String> ->
@@ -100,7 +114,7 @@ class rtn4337Module : Module() {
 }
 
 private suspend fun getSafeAccount(context: Context, params: CommonParams): SafeAccount {
-    params.verifyMandatoryUrls()
+    params.verifyParams()
     requireNotNull(params.chainId) { "chainId is required" }
     requireNotNull(params.signer) { "signer is required" }
     val rpcService = HttpService(params.rpcUrl)

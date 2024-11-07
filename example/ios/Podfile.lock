@@ -1204,10 +1204,10 @@ PODS:
     - React-utils (= 0.74.5)
   - rtn4337 (0.1.0):
     - ExpoModulesCore
-    - swift4337 (~> 1.0.2)
+    - swift4337 (= 0.4.1)
   - secp256k1.swift (0.1.4)
   - SocketRocket (0.7.0)
-  - swift4337 (1.0.2):
+  - swift4337 (0.4.1):
     - SwiftCBOR (~> 0.4.7)
     - web3.swift (~> 1.6.1)
   - SwiftCBOR (0.4.7)
@@ -1285,9 +1285,6 @@ DEPENDENCIES:
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
-  https://github.com/a-thomas/specs-repo:
-    - swift4337
-    - web3.swift
   https://github.com/CocoaPods/Specs.git:
     - BigInt
     - GenericJSON
@@ -1295,6 +1292,9 @@ SPEC REPOS:
     - secp256k1.swift
     - SocketRocket
     - SwiftCBOR
+  https://github.com/cometh-hq/pod-specs:
+    - swift4337
+    - web3.swift
 
 EXTERNAL SOURCES:
   boost:
@@ -1487,14 +1487,14 @@ SPEC CHECKSUMS:
   React-runtimescheduler: db7189185a2e5912b0d17194302e501f801a381e
   React-utils: 3f1fcffc14893afb9a7e5b7c736353873cc5fc95
   ReactCommon: f79ae672224dc1e6c2d932062176883c98eebd57
-  rtn4337: 1be0f078dc588b813031dad6ad6f183acc78ea09
+  rtn4337: d7694ea7cca8659a45e88425d47f863bf4c8d1f6
   secp256k1.swift: a7e7a214f6db6ce5db32cc6b2b45e5c4dd633634
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  swift4337: ab8569475940d9f4709bf95e063b0fc5b0ee3ed0
+  swift4337: b6271f3fe6e3500aca697ce3e6cbea2047ffcca3
   SwiftCBOR: 465775bed0e8bac7bfb8160bcf7b95d7f75971e4
   web3.swift: fc0c3fc6631caf17609586d006a51cc9d84d885b
   Yoga: 33622183a85805e12703cd618b2c16bfd18bfffb
 
-PODFILE CHECKSUM: d46f11a2bb75909a7a0492a69ae3e68ae6e30031
+PODFILE CHECKSUM: a9ee5c621b24a37363b95aa8488fdd021893421b
 
 COCOAPODS: 1.15.2

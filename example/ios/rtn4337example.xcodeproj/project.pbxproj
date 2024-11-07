@@ -27,7 +27,9 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = rtn4337example/main.m; sourceTree = "<group>"; };
 		3576938473644A3AA01A7047 /* rtn4337example-Bridging-Header.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = "rtn4337example-Bridging-Header.h"; path = "rtn4337example/rtn4337example-Bridging-Header.h"; sourceTree = "<group>"; };
 		40BEA3F2685E274C48899D62 /* Pods_rtn4337example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_rtn4337example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		5BDF0DCA52535E721FA633A8 /* Pods-rtn4337example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-rtn4337example.debug.xcconfig"; path = "Target Support Files/Pods-rtn4337example/Pods-rtn4337example.debug.xcconfig"; sourceTree = "<group>"; };
 		60C0831D08E24807BB9C9CBD /* noop-file.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = "noop-file.swift"; path = "rtn4337example/noop-file.swift"; sourceTree = "<group>"; };
+		6AA27C1C2F530E526AF2C1E2 /* Pods-rtn4337example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-rtn4337example.release.xcconfig"; path = "Target Support Files/Pods-rtn4337example/Pods-rtn4337example.release.xcconfig"; sourceTree = "<group>"; };
 		6C2E3173556A471DD304B334 /* Pods-rtn4337example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-rtn4337example.debug.xcconfig"; path = "Target Support Files/Pods-rtn4337example/Pods-rtn4337example.debug.xcconfig"; sourceTree = "<group>"; };
 		7A4D352CD337FB3A3BF06240 /* Pods-rtn4337example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-rtn4337example.release.xcconfig"; path = "Target Support Files/Pods-rtn4337example/Pods-rtn4337example.release.xcconfig"; sourceTree = "<group>"; };
 		82AA9BAC032859630D617652 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = rtn4337example/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				D65327D7A22EEC0BE12398D9 /* Pods */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -89,8 +92,8 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				D65327D7A22EEC0BE12398D9 /* Pods */,
 				D7E4C46ADA2E9064B798F356 /* ExpoModulesProviders */,
+				B6163A32BC2179EF701966CC /* Pods */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -111,6 +114,16 @@
 				FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */,
 			);
 			name = rtn4337example;
+			sourceTree = "<group>";
+		};
+		B6163A32BC2179EF701966CC /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				5BDF0DCA52535E721FA633A8 /* Pods-rtn4337example.debug.xcconfig */,
+				6AA27C1C2F530E526AF2C1E2 /* Pods-rtn4337example.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
 			sourceTree = "<group>";
 		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
@@ -173,6 +186,7 @@
 				LastUpgradeCheck = 1130;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
+						DevelopmentTeam = L86774LX8H;
 						LastSwiftMigration = 1250;
 						ProvisioningStyle = Automatic;
 					};
@@ -336,7 +350,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = L86774LX8H;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -375,7 +389,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = L86774LX8H;
 				INFOPLIST_FILE = rtn4337example/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -468,7 +482,10 @@
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
@@ -537,7 +554,10 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
