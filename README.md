@@ -20,7 +20,7 @@ We currently support the following features:
 To add `rtn-4337` to your React Native project, install the package directly from the GitHub repository:
 
 ```
-npm install cometh-hq/rtn-4337#0.1.1
+npm install @cometh/rtn-4337
 ```
 
 ### Configure for iOS
@@ -61,7 +61,7 @@ npx pod-install
 ### Overview
 
 ```typescript
-import {SafeAccount} from 'rtn-4337';
+import {SafeAccount} from '@cometh/rtn-4337';
 
 const safeAccount = new SafeAccount(
   {
