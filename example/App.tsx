@@ -91,8 +91,32 @@ export default function App() {
               title="Create/Get passkey"
               onPress={() => {
                 reset();
+                // const x =
+                //   // "0x009b0ebda4628ab37791a7a6fb10de9bfc04badff8f4174d6429cff9add3e05c15";
+                //   "0x03944b1f2a13bb91dc17fc7760053be27452338beed4afec483f7b4f247f3543";
+                // const y =
+                //   // "0x5d76026eeec014c76b03564dce040f55f30d726d0b6b2b4da5a6b41d5a3309c4";
+                //   "0xfe918fa660ededcadd0a64f6493644d0e1577ebe9290259d4b09a41418bf17cc";
+                // const signer = PasskeySigner.fromExisting(rpId, userName, {
+                //   x,
+                //   y,
+                // });
+                // console.log("passkey created", JSON.stringify(signer));
+                // const account = new SafeAccount({
+                //   chainId: 84532, // needed for android
+                //   rpcUrl:
+                //     "https://base-sepolia.g.alchemy.com/v2/UEwp8FtpdjcL5oekF6CjMzxe1D3768XU",
+                //   bundlerUrl:
+                //     "https://bundler.cometh.io/84532?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx",
+                //   signer,
+                //   paymasterUrl:
+                //     "https://paymaster.cometh.io/84532?apikey=Y3dZHg2cc2qOT9ukzvxZZ7jEloTqx5rx",
+                // });
+                // setPasskeySigner(signer);
+                // setSafeAccount(account);
                 PasskeySigner.create(rpId, userName)
                   .then((signer) => {
+                    console.log("passkey created", JSON.stringify(signer));
                     const account = new SafeAccount({
                       chainId: 84532, // needed for android
                       rpcUrl:
@@ -321,6 +345,25 @@ export default function App() {
                 .signUserOperation(userOp)
                 .then((result) => {
                   console.log(result);
+                })
+                .catch((error) => {
+                  console.error(error);
+                });
+            }}
+          />
+          <Button
+            title="Sign message & validate"
+            onPress={() => {
+              const message = "0xaaaa";
+              safeAccount!
+                .signMessage(message)
+                .then((result) => {
+                  console.log(result);
+                  safeAccount!
+                    .isValidSignature(message, result)
+                    .then((result) => {
+                      console.log(`isValidSignature=${result}`);
+                    });
                 })
                 .catch((error) => {
                   console.error(error);

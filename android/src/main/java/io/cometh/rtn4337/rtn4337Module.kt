@@ -13,10 +13,12 @@ import io.cometh.android4337.safe.SafeAccount
 import io.cometh.android4337.safe.SafeConfig
 import io.cometh.android4337.safe.signer.Signer
 import io.cometh.android4337.safe.signer.eoa.EOASigner
+import io.cometh.android4337.safe.signer.passkey.Passkey
 import io.cometh.android4337.safe.signer.passkey.PasskeySigner
 import io.cometh.android4337.toMap
 import io.cometh.android4337.utils.hexToAddress
 import io.cometh.android4337.utils.hexToBigInt
+import io.cometh.android4337.utils.hexToByteArray
 import io.cometh.android4337.utils.toHex
 import io.cometh.rtn4337.types.CommonParams
 import io.cometh.rtn4337.types.TxParamsRecord
@@ -96,6 +98,14 @@ class rtn4337Module : Module() {
             return@Coroutine getSafeAccount(appContext.reactContext!!, params).signUserOperation(userOp.toUserOp()).toHex()
         }
 
+        AsyncFunction("signMessage") Coroutine { params: CommonParams, message: String ->
+            return@Coroutine getSafeAccount(appContext.reactContext!!, params).signMessage(message).toHex()
+        }
+
+        AsyncFunction("isValidSignature") Coroutine { params: CommonParams, message: String, signature: String, ->
+            return@Coroutine getSafeAccount(appContext.reactContext!!, params).isValidSignature(message, signature.hexToByteArray())
+        }
+
         // BUNDLER
 
         AsyncFunction("ethGetUserOperationReceipt") Coroutine { bundlerUrl: String, userOpHash: String ->
@@ -146,6 +156,12 @@ private suspend fun getSigner(context: Context, signer: Map<String, Any>): Signe
     if (signer.containsKey("rpId")) {
         val rpId = signer["rpId"] as String
         val userName = signer["userName"] as String
+        if (signer.containsKey("passkeyX") && signer.containsKey("passkeyY")) {
+            val passkeyX = signer["passkeyX"] as String
+            val passkeyY = signer["passkeyY"] as String
+            val passkey = Passkey(passkeyX.hexToBigInt(), passkeyY.hexToBigInt())
+            return PasskeySigner.withSharedSigner(context, rpId, userName, passkey=passkey)
+        }
         return PasskeySigner.withSharedSigner(context, rpId, userName)
     } else {
         val privateKey = signer["privateKey"] as String

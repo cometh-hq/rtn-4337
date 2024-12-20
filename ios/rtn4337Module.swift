@@ -167,6 +167,29 @@ public class rtn4337Module: Module {
                 throw Rtn4337Exception(error.localizedDescription)
             }
         }
+        
+        AsyncFunction("signMessage") { (params: CommonParams, message: String) -> String in
+            let safeAccount = try await getSafeAccount(params: params)
+            guard let data = message.web3.hexData else {
+                throw Rtn4337Exception("Invalid message")
+            }
+            guard let signature = try await safeAccount.signMessage(data) else {
+                throw Rtn4337Exception("Cannot sign message")
+            }
+            return signature.web3.hexString
+        }
+        
+        AsyncFunction("isValidSignature") { (params: CommonParams, message: String, signature: String) -> Bool in
+            let safeAccount = try await getSafeAccount(params: params)
+            guard let messageData = message.web3.hexData else {
+                throw Rtn4337Exception("Invalid message")
+            }
+            guard let signatureData = signature.web3.hexData else {
+                throw Rtn4337Exception("Invalid signature")
+            }
+            let isValidSignature = try await safeAccount.isValidSignature(messageData, signature: signatureData)
+            return isValidSignature
+        }
 
     }
 }
@@ -194,6 +217,11 @@ private func getSafeAccount(params: CommonParams) async throws -> SafeAccount {
 
 private func getSigner(signer: [String: Any], rpc: EthereumHttpClient) async throws -> SignerProtocol {
     if let rpId = signer["rpId"] as? String, let userName = signer["userName"] as? String {
+        if let passkeyX = signer["passkeyX"] as? String, let passkeyY = signer["passkeyY"] as? String {
+            let passkey = PublicKey(x: passkeyX, y:passkeyY)
+            let signer = try await SafePasskeySigner(publicKey: passkey, domain: rpId, name: userName, isSharedWebauthnSigner: true, rpc: rpc)
+            return signer
+        }
         let signer = try await SafePasskeySigner(domain: rpId, name: userName, isSharedWebauthnSigner: true, rpc: rpc)
         return signer
     } else {
