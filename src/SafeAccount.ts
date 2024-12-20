@@ -59,31 +59,21 @@ class SafeAccount {
       address: this.address,
       paymasterUrl: this.paymasterUrl,
       signer: {
-        ...(this.signer instanceof PasskeySigner && { rpId: this.signer.rpId }),
         ...(this.signer instanceof PasskeySigner && {
-          userName: this.signer.userName,
+          rpId: this.signer.getRpId(),
+          userName: this.signer.getUserName(),
         }),
+        ...(this.signer instanceof PasskeySigner &&
+          this.signer.isFromExisting() && {
+            passkeyX: this.signer.getPasskey()!.x,
+            passkeyY: this.signer.getPasskey()!.y,
+          }),
         ...(this.signer instanceof EOASigner && {
           privateKey: this.signer.privateKey,
         }),
       },
     };
   }
-
-  // sendUserOperation(
-  //   to_address: string,
-  //   value: string,
-  //   data: string,
-  //   delegateCall: boolean = false,
-  // ): Promise<string> {
-  //   return rtn4337Module.sendUserOperation(
-  //     this.getCommonParams(),
-  //     to_address,
-  //     value,
-  //     data,
-  //     delegateCall,
-  //   );
-  // }
 
   sendUserOperation(params: TransactionParams[]): Promise<string> {
     if (params.length === 0) {
@@ -94,7 +84,6 @@ class SafeAccount {
     for (let i = 0; i < params.length; i++) {
       if (!isValidEthereumAddress(params[i].to))
         throw new Error("Invalid to address");
-
       if (!params[i].value) params[i].value = "0x0";
       else if (!isValidHex(params[i].value!))
         throw new Error("Invalid value, must be a valid hex string");
@@ -158,6 +147,18 @@ class SafeAccount {
         delegateCall,
       )
       .then((result) => result as UserOperation);
+  }
+
+  signMessage(message: string): Promise<string> {
+    return rtn4337Module.signMessage(this.getCommonParams(), message);
+  }
+
+  isValidSignature(message: string, signature: string): Promise<boolean> {
+    return rtn4337Module.isValidSignature(
+      this.getCommonParams(),
+      message,
+      signature,
+    );
   }
 }
 

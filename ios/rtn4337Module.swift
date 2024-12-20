@@ -194,6 +194,11 @@ private func getSafeAccount(params: CommonParams) async throws -> SafeAccount {
 
 private func getSigner(signer: [String: Any], rpc: EthereumHttpClient) async throws -> SignerProtocol {
     if let rpId = signer["rpId"] as? String, let userName = signer["userName"] as? String {
+        if let passkeyX = signer["passkeyX"] as? String, let passkeyY = signer["passkeyY"] as? String {
+            let passkey = PublicKey(x: passkeyX, y:passkeyY)
+            let signer = try await SafePasskeySigner(publicKey: passkey, domain: rpId, name: userName, isSharedWebauthnSigner: true, rpc: rpc)
+            return signer
+        }
         let signer = try await SafePasskeySigner(domain: rpId, name: userName, isSharedWebauthnSigner: true, rpc: rpc)
         return signer
     } else {

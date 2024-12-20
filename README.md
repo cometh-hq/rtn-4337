@@ -188,6 +188,17 @@ When deploying the safe, the Safe WebAuthn Shared Signer will be configured with
 
 You can check the example app for a complete example (see [example](https://github.com/cometh-hq/rt-4337/tree/main/example)).
 
+##### Using an existing passkey
+
+If you prefer to manage the passkey on your side, you can initialize a signer by directly providing the passkey.
+
+```typescript
+const passkey = { x: "<passkey_x>", y: "<passkey_y>" }
+const signer = Passkey.fromExisting("sample4337.cometh.io", "my_user", passkey)
+const safeAccount = new SafeAccount({ chainId, rpcUrl, bundlerUrl, signer, paymasterUrl})
+```
+
+
 ##### Safe WebAuthn Signer
 
 Not yet supported.

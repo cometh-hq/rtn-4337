@@ -1,4 +1,4 @@
 export type Passkey = {
-  x: number;
-  y: number;
+  x: string;
+  y: string;
 };
