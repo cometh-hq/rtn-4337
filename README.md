@@ -148,6 +148,21 @@ const userOpHash = await safeAccount.sendUserOperation([
   ])
 ```
 
+##### Sign message (eip-1271)
+
+SmartAccount implements Message Signature following [EIP 1271](https://eips.ethereum.org/EIPS/eip-1271).
+
+Safe provide an implementation in its smart account contract.
+We provide methods that allow the signature and the verification of Signature for Safe.
+
+
+```typescript
+const message = "0xaaaa"
+const signature = await safeAccount.signMessage(message)
+const isValidSignature = await safeAccount.isValidSignature(message, signature)
+```
+
+
 ### Signer
 
 To control a Smart Account, users need a Signer for authentication.
@@ -197,7 +212,6 @@ const passkey = { x: "<passkey_x>", y: "<passkey_y>" }
 const signer = Passkey.fromExisting("sample4337.cometh.io", "my_user", passkey)
 const safeAccount = new SafeAccount({ chainId, rpcUrl, bundlerUrl, signer, paymasterUrl})
 ```
-
 
 ##### Safe WebAuthn Signer
 

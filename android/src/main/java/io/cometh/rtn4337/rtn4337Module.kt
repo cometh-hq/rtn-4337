@@ -18,6 +18,7 @@ import io.cometh.android4337.safe.signer.passkey.PasskeySigner
 import io.cometh.android4337.toMap
 import io.cometh.android4337.utils.hexToAddress
 import io.cometh.android4337.utils.hexToBigInt
+import io.cometh.android4337.utils.hexToByteArray
 import io.cometh.android4337.utils.toHex
 import io.cometh.rtn4337.types.CommonParams
 import io.cometh.rtn4337.types.TxParamsRecord
@@ -95,6 +96,14 @@ class rtn4337Module : Module() {
 
         AsyncFunction("signUserOperation") Coroutine { params: CommonParams, userOp: UserOperationRecord ->
             return@Coroutine getSafeAccount(appContext.reactContext!!, params).signUserOperation(userOp.toUserOp()).toHex()
+        }
+
+        AsyncFunction("signMessage") Coroutine { params: CommonParams, message: String ->
+            return@Coroutine getSafeAccount(appContext.reactContext!!, params).signMessage(message).toHex()
+        }
+
+        AsyncFunction("isValidSignature") Coroutine { params: CommonParams, message: String, signature: String, ->
+            return@Coroutine getSafeAccount(appContext.reactContext!!, params).isValidSignature(message, signature.hexToByteArray())
         }
 
         // BUNDLER

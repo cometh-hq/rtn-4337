@@ -1204,10 +1204,10 @@ PODS:
     - React-utils (= 0.74.5)
   - rtn4337 (0.1.1):
     - ExpoModulesCore
-    - swift4337 (= 0.4.1)
+    - swift4337 (= 0.4.2)
   - secp256k1.swift (0.1.4)
   - SocketRocket (0.7.0)
-  - swift4337 (0.4.1):
+  - swift4337 (0.4.2):
     - SwiftCBOR (~> 0.4.7)
     - web3.swift (~> 1.6.1)
   - SwiftCBOR (0.4.7)
@@ -1487,10 +1487,10 @@ SPEC CHECKSUMS:
   React-runtimescheduler: db7189185a2e5912b0d17194302e501f801a381e
   React-utils: 3f1fcffc14893afb9a7e5b7c736353873cc5fc95
   ReactCommon: f79ae672224dc1e6c2d932062176883c98eebd57
-  rtn4337: af356bdd6254eb0ebb45d5d6fef5f971b7038e81
+  rtn4337: 2a52cc61646fd87f1b457392763097d8ee97e185
   secp256k1.swift: a7e7a214f6db6ce5db32cc6b2b45e5c4dd633634
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  swift4337: b6271f3fe6e3500aca697ce3e6cbea2047ffcca3
+  swift4337: 658a8158f8056f4a39ef38e6ef4817bd325cffce
   SwiftCBOR: 465775bed0e8bac7bfb8160bcf7b95d7f75971e4
   web3.swift: fc0c3fc6631caf17609586d006a51cc9d84d885b
   Yoga: 33622183a85805e12703cd618b2c16bfd18bfffb
