@@ -14,6 +14,7 @@ import {
   SafeAccount,
   SafeUtils,
   EOASigner,
+  ConnectApi,
 } from "rtn-4337";
 
 export default function App() {
@@ -368,6 +369,66 @@ export default function App() {
                 .catch((error) => {
                   console.error(error);
                 });
+            }}
+          />
+          <Button
+            title="Connect API"
+            onPress={async () => {
+              const apiKey = "bnptvYrGQAqDTJOGpAUiMFAaw3QKjjeN";
+              const walletAddress =
+                "0x2AE4d78a1Ec1c9dd5B36fBb7d970Ac304049b9fA";
+              const api = new ConnectApi(
+                apiKey,
+                "https://api.4337.cometh.io",
+                84532,
+              );
+              let result = "";
+              try {
+                result = await api.getPasskeySignersByWalletAddress({
+                  walletAddress,
+                });
+                console.log("getPasskeySignersByWalletAddress", result);
+              } catch (error) {
+                console.error("getPasskeySignersByWalletAddress", error);
+              }
+
+              try {
+                result = await api.isValidSignature({
+                  walletAddress,
+                  message: "0xaaaa",
+                  signature: "0x123456",
+                });
+                console.log("isValidSignature", result);
+              } catch (error) {
+                console.error("isValidSignature", error);
+              }
+              try {
+                result = await api.createWebAuthnSigner({
+                  walletAddress,
+                  publicKeyId: "0x123456",
+                  publicKeyX: "0x123456",
+                  publicKeyY: "0x123456",
+                  deviceData: {
+                    browser: "Chrome",
+                    os: "Android",
+                    platform: "Mobile",
+                  },
+                  signerAddress: walletAddress,
+                });
+                console.log("createWebAuthnSigner", result);
+              } catch (error) {
+                console.error("createWebAuthnSigner", error);
+              }
+              try {
+                result = await api.initWallet({
+                  walletAddress,
+                  initiatorAddress:
+                    "0x2f920a66c2f9760f6fe5f49b289322ddf60f9103",
+                });
+                console.log("initWallet", result);
+              } catch (error) {
+                console.error("initWallet", error);
+              }
             }}
           />
         </ScrollView>

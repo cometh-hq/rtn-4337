@@ -190,7 +190,87 @@ public class rtn4337Module: Module {
             let isValidSignature = try await safeAccount.isValidSignature(messageData, signature: signatureData)
             return isValidSignature
         }
+        
+        // Connect API
+        AsyncFunction("connectApiInitWallet") { (params: ConnectParams, walletAddress: String, initiatorAddress: String, publicKeyId: String?, publicKeyX: String?, publicKeyY: String?, deviceData: ConnectDeviceData?, promise: Promise)  in
+            let api = ConnectApi(apiKey: params.apiKey!, baseUrl: params.baseUrl!)
+            var data: DeviceData? = nil
+            if deviceData != nil {
+                data = DeviceData(
+                    browser: deviceData?.browser, os: deviceData?.os, platform: deviceData?.platform
+                )
+            }
+            api.initWallet(chainId: "\(params.chainId!)", walletAddress: walletAddress, initiatorAddress: initiatorAddress, publicKeyId: publicKeyId, publicKeyX: publicKeyX, publicKeyY: publicKeyY, deviceData: data) { result in
+                promise.resolve(handleConnectResp(result: result))
+            }
+        }
+        AsyncFunction("connectApiCreateWebAuthnSigner") { (params: ConnectParams, walletAddress: String, publicKeyId: String, publicKeyX: String, publicKeyY: String, deviceData: ConnectDeviceData, signerAddress: String, promise: Promise) in
+            let api = ConnectApi(apiKey: params.apiKey!, baseUrl: params.baseUrl!)
+            let data = DeviceData(
+                browser: deviceData.browser, os: deviceData.os, platform: deviceData.platform
+            )
+            api.createWebAuthnSigner(chainId: "\(params.chainId!)", walletAddress: walletAddress, publicKeyId: publicKeyId, publicKeyX: publicKeyX, publicKeyY: publicKeyY, deviceData: data, signerAddress: signerAddress, isSharedWebAuthnSigner: true) { result in
+                promise.resolve(handleConnectResp(result: result))
+            }
+        }
+        AsyncFunction("connectApiGetPasskeySignersByWalletAddress") { (params: ConnectParams, walletAddress: String, promise: Promise)  in
+            let api = ConnectApi(apiKey: params.apiKey!, baseUrl: params.baseUrl!)
+            api.getPasskeySignersByWalletAddress(walletAddress: walletAddress) { result in
+                promise.resolve(handleConnectResp(result: result))
+            }
+        }
+        AsyncFunction("connectApiIsValidSignature") { (params: ConnectParams, walletAddress: String, message: String, signature: String, promise: Promise)  in
+            let api = ConnectApi(apiKey: params.apiKey!, baseUrl: params.baseUrl!)
+            api.isValidSignature(walletAddress: walletAddress, chainId: "\(params.chainId!)", message: message, signature: signature) { result in
+                promise.resolve(handleConnectResp(result: result))
+            }
+        }
 
+    }
+}
+
+private func handleConnectResp<T>(result: Result<T, APIError>) -> [String: Any?] {
+    switch result {
+    case .success(let result):
+        if result is InitWalletResponse {
+            let resp = result as! InitWalletResponse
+            return [
+                "success": resp.success,
+                "isNewWallet": resp.isNewWallet
+            ]
+        }
+        else if result is GetPasskeySignersByWalletAddressResponse {
+            let resp = result as! GetPasskeySignersByWalletAddressResponse
+            return [
+                "success": resp.success,
+                "webAuthnSigners": resp.webAuthnSigners.map {
+                    return [
+                        "_id": $0._id,
+                        "publicKeyId": $0.publicKeyId,
+                        "publicKeyX": $0.publicKeyX,
+                        "publicKeyY": $0.publicKeyY,
+                        "signerAddress": $0.signerAddress,
+                        "isSharedWebAuthnSigner": $0.isSharedWebAuthnSigner,
+                    ]
+                }
+            ]
+        }
+        else if result is IsValidSignatureResp {
+            let resp = result as! IsValidSignatureResp
+            return [
+                "success": resp.success,
+                "result": resp.result
+            ]
+        }
+        else {
+            return [
+                "success": true
+            ]
+        }
+    case .failure(let error):
+        return [
+            "error": error
+        ]
     }
 }
 

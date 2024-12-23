@@ -1,13 +1,21 @@
 package io.cometh.rtn4337
 
 import android.content.Context
+import expo.modules.kotlin.Promise
+import expo.modules.kotlin.functions.AsyncFunction
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import io.cometh.android4337.TransactionParams
+import io.cometh.android4337.connect.ConnectApi
 import io.cometh.android4337.bundler.SimpleBundlerClient
 import io.cometh.android4337.bundler.response.UserOperationByHash
 import io.cometh.android4337.bundler.response.UserOperationReceipt
+import io.cometh.android4337.connect.ApiResult
+import io.cometh.android4337.connect.DeviceData
+import io.cometh.android4337.connect.InitWalletResponse
+import io.cometh.android4337.connect.IsValidSignatureResponse
+import io.cometh.android4337.connect.WebAuthnSigner
 import io.cometh.android4337.paymaster.PaymasterClient
 import io.cometh.android4337.safe.SafeAccount
 import io.cometh.android4337.safe.SafeConfig
@@ -21,6 +29,8 @@ import io.cometh.android4337.utils.hexToBigInt
 import io.cometh.android4337.utils.hexToByteArray
 import io.cometh.android4337.utils.toHex
 import io.cometh.rtn4337.types.CommonParams
+import io.cometh.rtn4337.types.ConnectDeviceData
+import io.cometh.rtn4337.types.ConnectParams
 import io.cometh.rtn4337.types.TxParamsRecord
 import io.cometh.rtn4337.types.UserOperationRecord
 import io.cometh.rtn4337.types.toUserOp
@@ -28,6 +38,7 @@ import io.cometh.rtn4337.types.verifyParams
 import org.web3j.crypto.Credentials
 import org.web3j.protocol.core.methods.response.TransactionReceipt
 import org.web3j.protocol.http.HttpService
+import org.web3j.utils.Async
 
 class rtn4337Module : Module() {
     override fun definition() = ModuleDefinition {
@@ -102,7 +113,7 @@ class rtn4337Module : Module() {
             return@Coroutine getSafeAccount(appContext.reactContext!!, params).signMessage(message).toHex()
         }
 
-        AsyncFunction("isValidSignature") Coroutine { params: CommonParams, message: String, signature: String, ->
+        AsyncFunction("isValidSignature") Coroutine { params: CommonParams, message: String, signature: String ->
             return@Coroutine getSafeAccount(appContext.reactContext!!, params).isValidSignature(message, signature.hexToByteArray())
         }
 
@@ -114,13 +125,110 @@ class rtn4337Module : Module() {
             return@Coroutine receipt.toMap()
         }
 
-        AsyncFunction("ethGetUserOperationByHash") Coroutine { bundlerUlr: String, userOpHash: String ->
-            val resp = SimpleBundlerClient(HttpService(bundlerUlr)).ethGetUserOperationByHash(userOpHash).send()
+        AsyncFunction("ethGetUserOperationByHash") Coroutine { bundlerUrl: String, userOpHash: String ->
+            val resp = SimpleBundlerClient(HttpService(bundlerUrl)).ethGetUserOperationByHash(userOpHash).send()
             val userOp = resp.result ?: return@Coroutine null
             return@Coroutine userOp.toMap()
         }
 
+        // CONNECT
+        AsyncFunction("connectApiInitWallet") Coroutine { params: ConnectParams, walletAddress: String, initiatorAddress: String, publicKeyId: String?, publicKeyX: String?, publicKeyY: String?, deviceData: ConnectDeviceData? ->
+            val api = ConnectApi(params.apiKey!!, params.baseUrl!!)
+            val result = api.initWallet(
+                params.chainId!!,
+                walletAddress,
+                initiatorAddress,
+                publicKeyId,
+                publicKeyX,
+                publicKeyY,
+                deviceData?.toDeviceData(),
+            )
+            return@Coroutine result.toMap()
+        }
+        AsyncFunction("connectApiCreateWebAuthnSigner") Coroutine { params: ConnectParams, walletAddress: String, publicKeyId: String, publicKeyX: String, publicKeyY: String, deviceData: ConnectDeviceData, signerAddress: String ->
+            val api = ConnectApi(params.apiKey!!, params.baseUrl!!)
+            val result = api.createWebAuthnSigner(
+                params.chainId!!,
+                walletAddress,
+                publicKeyId,
+                publicKeyX,
+                publicKeyY,
+                deviceData.toDeviceData()!!,
+                signerAddress,
+                true
+            )
+            return@Coroutine result.toMap()
+        }
+        AsyncFunction("connectApiGetPasskeySignersByWalletAddress") Coroutine { params: ConnectParams, walletAddress: String ->
+            val api = ConnectApi(params.apiKey!!, params.baseUrl!!)
+            val result = api.getPasskeySignersByWalletAddress(walletAddress)
+            return@Coroutine result.toMap()
+        }
+        AsyncFunction("connectApiIsValidSignature") Coroutine { params: ConnectParams, walletAddress: String, message: String, signature: String ->
+            val api = ConnectApi(params.apiKey!!, params.baseUrl!!)
+            val result = api.isValidSignature(walletAddress, message, signature, params.chainId!!)
+            return@Coroutine result.toMap()
+        }
     }
+}
+
+private fun <T> ApiResult<T>.toMap(): Map<String, Any?> {
+    when (this) {
+        is ApiResult.Success -> return data.toMap()
+        is ApiResult.Error -> return mapOf("error" to message)
+    }
+}
+
+private fun <T> T.toMap(): Map<String, Any?> {
+    when (this) {
+        is InitWalletResponse -> {
+            return mapOf(
+                "success" to success,
+                "isNewWallet" to isNewWallet,
+            )
+        }
+        is Unit -> {
+            return mapOf("success" to true)
+        }
+        // check is type List<WebAuthnSigner>
+        is ArrayList<*> -> {
+            return mapOf(
+                "success" to true,
+                "webAuthnSigners" to this.map { (it as WebAuthnSigner).toMap() }
+            )
+        }
+        is IsValidSignatureResponse -> {
+            return mapOf(
+                "success" to success,
+                "result" to result,
+            )
+        }
+        else -> {
+            throw IllegalArgumentException("Unsupported type")
+        }
+    }
+}
+
+private fun WebAuthnSigner.toMap(): Map<String, Any?> {
+    return mapOf(
+        "_id" to _id,
+        "publicKeyId" to publicKeyId,
+        "publicKeyX" to publicKeyX,
+        "publicKeyY" to publicKeyY,
+        "signerAddress" to signerAddress,
+        "isSharedWebAuthnSigner" to isSharedWebAuthnSigner,
+    )
+}
+
+private fun ConnectDeviceData.toDeviceData(): DeviceData? {
+    if (browser == null || os == null || platform == null) {
+        return null
+    }
+    return DeviceData(
+        browser = browser,
+        os = os,
+        platform = platform
+    )
 }
 
 private suspend fun getSafeAccount(context: Context, params: CommonParams): SafeAccount {
@@ -160,7 +268,7 @@ private suspend fun getSigner(context: Context, signer: Map<String, Any>): Signe
             val passkeyX = signer["passkeyX"] as String
             val passkeyY = signer["passkeyY"] as String
             val passkey = Passkey(passkeyX.hexToBigInt(), passkeyY.hexToBigInt())
-            return PasskeySigner.withSharedSigner(context, rpId, userName, passkey=passkey)
+            return PasskeySigner.withSharedSigner(context, rpId, userName, passkey = passkey)
         }
         return PasskeySigner.withSharedSigner(context, rpId, userName)
     } else {
