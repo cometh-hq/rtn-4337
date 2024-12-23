@@ -12,6 +12,7 @@ class UserOperationReceiptPoller {
 
   async waitForReceipt(userOpHash: string): Promise<UserOperationReceipt> {
     const startTime = Date.now();
+    let timeoutId: number;
 
     return new Promise((resolve, reject) => {
       const checkCondition = async () => {
@@ -20,20 +21,23 @@ class UserOperationReceiptPoller {
             await this.bundler.ethGetUserOperationReceipt(userOpHash);
 
           if (receipt != null) {
+            clearTimeout(timeoutId);
             resolve(receipt);
             return;
           }
 
           if (Date.now() - startTime >= this.timeout) {
+            clearTimeout(timeoutId);
             reject(new Error("Timeout"));
             return;
           }
         } catch (error) {
+          clearTimeout(timeoutId);
           reject(error);
           return;
         }
 
-        setTimeout(checkCondition, 1000);
+        timeoutId = setTimeout(checkCondition, 1000);
       };
 
       checkCondition();
