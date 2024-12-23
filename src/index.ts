@@ -6,3 +6,4 @@ export type { Passkey } from "./signer/Passkey";
 export { EOASigner } from "./signer/EOASigner";
 export { Bundler } from "./Bundler";
 export { ConnectApi } from "./connect/ConnectApi";
+export { UserOperationReceiptPoller } from "./UserOperationReceiptPoller";

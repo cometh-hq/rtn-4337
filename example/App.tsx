@@ -15,6 +15,7 @@ import {
   SafeUtils,
   EOASigner,
   ConnectApi,
+  UserOperationReceiptPoller,
 } from "rtn-4337";
 
 export default function App() {
@@ -201,9 +202,12 @@ export default function App() {
                           delegateCall: false,
                         },
                       ])
-                      .then((result) => {
+                      .then(async (result) => {
                         console.log("User Op sent", result);
                         setUserOpHash("✅ " + result);
+                        const poller = new UserOperationReceiptPoller(bundler);
+                        const receipt = await poller.waitForReceipt(result);
+                        console.log("receipt", receipt);
                       })
                       .catch((error) => {
                         setUserOpHash("❌ error: " + error);
