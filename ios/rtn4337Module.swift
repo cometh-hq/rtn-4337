@@ -19,8 +19,8 @@ public class rtn4337Module: Module {
             do {
                 let signer = try await SafePasskeySigner(domain:rpId, name:userName)
                 return [
-                    "publicX": signer.publicX.web3.hexString,
-                    "publicY": signer.publicY.web3.hexString
+                    "x": signer.publicX.web3.hexString,
+                    "y": signer.publicY.web3.hexString
                 ]
             } catch {
                 throw Rtn4337Exception(error.localizedDescription)
