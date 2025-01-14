@@ -2,7 +2,7 @@
   "expo": {
     "name": "rtn-4337",
     "slug": "rtn-4337",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "description": "rtn-4337 module for 4337",
     "sdkVersion": "51.0.0",
     "platforms": [
