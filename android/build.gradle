@@ -44,5 +44,5 @@ android {
 
 dependencies {
   implementation project(':expo-modules-core')
-  implementation 'com.github.cometh-hq:android4337:0.2.5'
+  implementation 'com.github.cometh-hq:android4337:0.2.6'
 }
