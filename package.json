@@ -1,6 +1,6 @@
 {
   "name": "@cometh/rtn-4337",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "rtn-4337 is a React Native SDK that wraps natives libraries android4337 and swift4337 for building with ERC-4337.",
   "main": "build/index.js",
   "types": "build/index.d.ts",

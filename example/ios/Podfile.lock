@@ -1202,7 +1202,7 @@ PODS:
     - React-logger (= 0.74.5)
     - React-perflogger (= 0.74.5)
     - React-utils (= 0.74.5)
-  - rtn4337 (0.1.3):
+  - rtn4337 (0.1.5):
     - ExpoModulesCore
     - swift4337 (= 0.4.5)
   - secp256k1.swift (0.1.4)
@@ -1487,7 +1487,7 @@ SPEC CHECKSUMS:
   React-runtimescheduler: db7189185a2e5912b0d17194302e501f801a381e
   React-utils: 3f1fcffc14893afb9a7e5b7c736353873cc5fc95
   ReactCommon: f79ae672224dc1e6c2d932062176883c98eebd57
-  rtn4337: 8ac2b364412187135f57820347312f3990ea1fb1
+  rtn4337: 2c1d72732b9e248aa1631b3908eb9e56c7b347ca
   secp256k1.swift: a7e7a214f6db6ce5db32cc6b2b45e5c4dd633634
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   swift4337: fab900e032f2b2bcd344d68b48e16f4d70acc1b1
