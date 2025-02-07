@@ -1,4 +1,4 @@
-import { isValidEthereumAddress } from "./Utils";
+import { isValidEthereumAddress, requireHexAddress } from "./Utils";
 
 interface SafeConfig {
   safeModuleSetupAddress?: string;
@@ -56,12 +56,6 @@ const verifyConfig = (config: SafeConfig) => {
     );
   if (config.entryPointAddress)
     requireHexAddress("entryPointAddress", config.entryPointAddress);
-};
-
-const requireHexAddress = (name: string, address: string) => {
-  if (!isValidEthereumAddress(address)) {
-    throw new Error(`Invalid ${name} address: ${address}`);
-  }
 };
 
 export { SafeConfig, verifyConfig, defaultConfig };
