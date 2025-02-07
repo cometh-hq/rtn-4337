@@ -229,6 +229,40 @@ const safeAccount = new SafeAccount({ chainId, rpcUrl, bundlerUrl, signer, payma
 const userOpHash = await safeAccount.sendUserOperation([{to, value, data}])
 ```
 
+### Recovery Module
+
+#### Enable Recovery Module
+
+rtn-4337 provides a way to enable a recovery module for a Safe Account. In our implementation, we use [Delay Module](https://github.com/gnosisguild/zodiac-modifier-delay) as recovery module.
+
+Here is the API we provide:
+
+```typescript
+fun enableRecoveryModule(guardianAddress: Address, recoveryModuleConfig: RecoveryModuleConfig = RecoveryModuleConfig()): String
+fun getCurrentGuardian(delayAddress: Address): Address?
+fun isRecoveryStarted(delayAddress: Address): Boolean
+fun cancelRecovery(delayAddress: Address): String
+```
+
+- **enableRecoveryModule**: Enables the recovery module for the safe account by passing the guardian address and the recovery module configuration.
+- **getCurrentGuardian**: Returns the current guardian address (if any) for the delay module.
+- **isRecoveryStarted**: Returns true if the recovery process has started.
+- **cancelRecovery**: Cancels the recovery process (if any).
+
+`RecoveryModuleConfig` describes the configuration used for the recovery module, we provides default values:
+
+```typescript
+const defaultRecoveryConfig: RecoveryConfig = {
+  moduleFactoryAddress: "0x000000000000aDdB49795b0f9bA5BC298cDda236",
+  delayModuleAddress: "0xd54895B1121A2eE3f37b502F507631FA1331BED6",
+  recoveryCooldown: 86400,
+  recoveryExpiration: 604800,
+};
+```
+
+You can override the default values by providing your own `RecoveryConfig`.
+
+
 ### RPC, Bundler and Paymaster URLs
 
 - RPC: To interact with the blockchain and call methods on smart contracts.
@@ -237,6 +271,7 @@ const userOpHash = await safeAccount.sendUserOperation([{to, value, data}])
 
 The native libraries allow for overriding and creating your own RPC, bundler, or paymaster; this is not the case with this SDK. 
 Thus, we use the default implementations provided by the underlying native libraries.
+
 
 ## Contributors
 

@@ -1,5 +1,6 @@
 import { defaultConfig, SafeConfig, verifyConfig } from "./SafeConfig";
-import { isValidEthereumAddress, isValidHex } from "./Utils";
+import { isValidEthereumAddress, isValidHex, requireHexAddress } from "./Utils";
+import { defaultRecoveryConfig, RecoveryConfig } from "./recovery/RecoveryConfig";
 import rtn4337Module from "./rtn4337Module";
 import { EOASigner } from "./signer/EOASigner";
 import { PasskeySigner } from "./signer/PasskeySigner";
@@ -160,6 +161,32 @@ class SafeAccount {
       signature,
     );
   }
+
+  // recovery module
+  predictDelayModuleAddress(recoveryConfig: RecoveryConfig = defaultRecoveryConfig): Promise<string> {
+    return rtn4337Module.predictDelayModuleAddress(this.getCommonParams(), recoveryConfig);
+  }
+
+  enableRecoveryModule(guardianAddress: string, recoveryConfig: RecoveryConfig = defaultRecoveryConfig): Promise<string> {
+    requireHexAddress("guardianAddress", guardianAddress);
+    return rtn4337Module.enableRecoveryModule(this.getCommonParams(), guardianAddress, recoveryConfig);
+  }
+
+  getCurrentGuardian(delayAddress: string): Promise<string | null> {
+    requireHexAddress("delayAddress", delayAddress);
+    return rtn4337Module.getCurrentGuardian(this.getCommonParams(), delayAddress);
+  }
+
+  isRecoveryStarted(delayAddress: string): Promise<boolean> {
+    requireHexAddress("delayAddress", delayAddress);
+    return rtn4337Module.isRecoveryStarted(this.getCommonParams(), delayAddress);
+  }
+
+  cancelRecovery(delayAddress: string): Promise<string> {
+    requireHexAddress("delayAddress", delayAddress);
+    return rtn4337Module.cancelRecovery(this.getCommonParams(), delayAddress);
+  }
+
 }
 
 const isValidUserOp = (userOp: UserOperation) => {

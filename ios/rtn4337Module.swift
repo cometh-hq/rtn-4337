@@ -226,6 +226,33 @@ public class rtn4337Module: Module {
             }
         }
 
+        // RECOVERY
+        AsyncFunction("predictDelayModuleAddress") { (params: CommonParams, recoveryConfig: [String: Any]) -> String? in
+            let safeAccount = try await getSafeAccount(params: params)
+            let delayModuleAddress = try safeAccount.predictRecoveryModuleAddress(config: recoveryConfig.toRecoveryConfig())
+            return delayModuleAddress?.toChecksumAddress()
+        }
+        AsyncFunction("enableRecoveryModule") { (params: CommonParams, guardianAddress: String, recoveryConfig: [String: Any]) -> String in
+            let safeAccount = try await getSafeAccount(params: params)
+            let userOpHash = try await safeAccount.enableRecoveryModule(guardianAddress: EthereumAddress(guardianAddress), config: recoveryConfig.toRecoveryConfig())
+            return userOpHash
+        }
+        AsyncFunction("getCurrentGuardian") { (params: CommonParams, delayAddress: String) -> String? in
+            let safeAccount = try await getSafeAccount(params: params)
+            let guardianAddress = try await safeAccount.getCurrentGuardian(delayAddress: EthereumAddress(delayAddress))
+            return guardianAddress?.toChecksumAddress()
+        }
+        AsyncFunction("isRecoveryStarted") { (params: CommonParams, delayAddress: String) -> Bool in
+            let safeAccount = try await getSafeAccount(params: params)
+            let isRecoveryStarted = try await safeAccount.isRecoveryStarted(delayAddress: EthereumAddress(delayAddress))
+            return isRecoveryStarted
+        }
+        AsyncFunction("cancelRecovery") { (params: CommonParams, delayAddress: String) -> String in
+            let safeAccount = try await getSafeAccount(params: params)
+            let userOpHash = try await safeAccount.cancelRecovery(delayAddress: EthereumAddress(delayAddress))
+            return userOpHash
+        }
+
     }
 }
 
@@ -425,7 +452,7 @@ extension UserOperationRecord {
 
 extension GetUserOperationByHashResponse {
     public func toDictionary() -> [String: Any?] {
-        var dict: [String: Any?] = [
+        let dict: [String: Any?] = [
             "userOperation": self.userOperation.toDictionary(),
             "entryPoint": self.entryPoint,
             "transactionHash": self.transactionHash,
@@ -435,5 +462,20 @@ extension GetUserOperationByHashResponse {
         return dict
     }
 }
+
+extension [String: Any] {
+    func toRecoveryConfig() -> RecoveryModuleConfig {
+        return RecoveryModuleConfig(
+            moduleFactoryAddress: self["moduleFactoryAddress"]! as! String,
+            delayModuleAddress: self["delayModuleAddress"]! as! String,
+            recoveryCooldown: self["recoveryCooldown"] as! Int,
+            recoveryExpiration: self["recoveryExpiration"] as! Int
+        )
+    }
+}   
+
+
+
+
             
             

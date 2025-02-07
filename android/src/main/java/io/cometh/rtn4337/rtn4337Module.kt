@@ -17,6 +17,7 @@ import io.cometh.android4337.connect.InitWalletResponse
 import io.cometh.android4337.connect.IsValidSignatureResponse
 import io.cometh.android4337.connect.WebAuthnSigner
 import io.cometh.android4337.paymaster.PaymasterClient
+import io.cometh.android4337.safe.RecoveryModuleConfig
 import io.cometh.android4337.safe.SafeAccount
 import io.cometh.android4337.safe.SafeConfig
 import io.cometh.android4337.safe.signer.Signer
@@ -27,6 +28,7 @@ import io.cometh.android4337.toMap
 import io.cometh.android4337.utils.hexToAddress
 import io.cometh.android4337.utils.hexToBigInt
 import io.cometh.android4337.utils.hexToByteArray
+import io.cometh.android4337.utils.toChecksumHex
 import io.cometh.android4337.utils.toHex
 import io.cometh.rtn4337.types.CommonParams
 import io.cometh.rtn4337.types.ConnectDeviceData
@@ -47,7 +49,8 @@ class rtn4337Module : Module() {
         // SIGNER
 
         AsyncFunction("createPasskeySigner") Coroutine { rpId: String, userName: String ->
-            val passkeySigner = PasskeySigner.withSharedSigner(appContext.reactContext!!, rpId, userName)
+            val passkeySigner =
+                PasskeySigner.withSharedSigner(appContext.reactContext!!, rpId, userName)
             return@Coroutine mapOf(
                 "x" to passkeySigner.passkey.x.toHex(),
                 "y" to passkeySigner.passkey.y.toHex(),
@@ -80,11 +83,17 @@ class rtn4337Module : Module() {
         }
 
         AsyncFunction("predictAddress") Coroutine { chainId: Int, rpcUrl: String, signer: Map<String, Any>, safeConfig: Map<String, String> ->
-            return@Coroutine SafeAccount.predictAddress(getSigner(appContext.reactContext!!, signer), HttpService(rpcUrl), getSafeConfig(safeConfig))
+            return@Coroutine SafeAccount.predictAddress(
+                getSigner(
+                    appContext.reactContext!!,
+                    signer
+                ), HttpService(rpcUrl), getSafeConfig(safeConfig)
+            )
         }
 
         AsyncFunction("getOwners") Coroutine { params: CommonParams ->
-            return@Coroutine getSafeAccount(appContext.reactContext!!, params).getOwners()?.map { it.value }
+            return@Coroutine getSafeAccount(appContext.reactContext!!, params).getOwners()
+                ?.map { it.value }
         }
 
         AsyncFunction("isDeployed") Coroutine { params: CommonParams ->
@@ -92,7 +101,10 @@ class rtn4337Module : Module() {
         }
 
         AsyncFunction("addOwner") Coroutine { params: CommonParams, owner: String ->
-            return@Coroutine getSafeAccount(appContext.reactContext!!, params).addOwner(owner.hexToAddress())
+            return@Coroutine getSafeAccount(
+                appContext.reactContext!!,
+                params
+            ).addOwner(owner.hexToAddress())
         }
 
         AsyncFunction("prepareUserOperation") Coroutine { params: CommonParams, to: String, value: String, data: String, delegateCall: Boolean ->
@@ -106,27 +118,37 @@ class rtn4337Module : Module() {
         }
 
         AsyncFunction("signUserOperation") Coroutine { params: CommonParams, userOp: UserOperationRecord ->
-            return@Coroutine getSafeAccount(appContext.reactContext!!, params).signUserOperation(userOp.toUserOp()).toHex()
+            return@Coroutine getSafeAccount(appContext.reactContext!!, params).signUserOperation(
+                userOp.toUserOp()
+            ).toHex()
         }
 
         AsyncFunction("signMessage") Coroutine { params: CommonParams, message: String ->
-            return@Coroutine getSafeAccount(appContext.reactContext!!, params).signMessage(message).toHex()
+            return@Coroutine getSafeAccount(appContext.reactContext!!, params).signMessage(message)
+                .toHex()
         }
 
         AsyncFunction("isValidSignature") Coroutine { params: CommonParams, message: String, signature: String ->
-            return@Coroutine getSafeAccount(appContext.reactContext!!, params).isValidSignature(message, signature.hexToByteArray())
+            return@Coroutine getSafeAccount(appContext.reactContext!!, params).isValidSignature(
+                message,
+                signature.hexToByteArray()
+            )
         }
 
         // BUNDLER
 
         AsyncFunction("ethGetUserOperationReceipt") Coroutine { bundlerUrl: String, userOpHash: String ->
-            val resp = SimpleBundlerClient(HttpService(bundlerUrl)).ethGetUserOperationReceipt(userOpHash).send()
+            val resp =
+                SimpleBundlerClient(HttpService(bundlerUrl)).ethGetUserOperationReceipt(userOpHash)
+                    .send()
             val receipt = resp.result ?: return@Coroutine null
             return@Coroutine receipt.toMap()
         }
 
         AsyncFunction("ethGetUserOperationByHash") Coroutine { bundlerUrl: String, userOpHash: String ->
-            val resp = SimpleBundlerClient(HttpService(bundlerUrl)).ethGetUserOperationByHash(userOpHash).send()
+            val resp =
+                SimpleBundlerClient(HttpService(bundlerUrl)).ethGetUserOperationByHash(userOpHash)
+                    .send()
             val userOp = resp.result ?: return@Coroutine null
             return@Coroutine userOp.toMap()
         }
@@ -169,6 +191,36 @@ class rtn4337Module : Module() {
             val result = api.isValidSignature(walletAddress, message, signature, params.chainId!!)
             return@Coroutine result.toMap()
         }
+
+        // RECOVERY
+        AsyncFunction("predictDelayModuleAddress") Coroutine { params: CommonParams, recoveryConfig: Map<String, Any> ->
+            return@Coroutine getSafeAccount(
+                appContext.reactContext!!,
+                params
+            ).predictDelayModuleAddress(getRecoveryConfig(recoveryConfig))
+        }
+        AsyncFunction("enableRecoveryModule") Coroutine { params: CommonParams, guardianAddress: String, recoveryConfig: Map<String, Any> ->
+            return@Coroutine getSafeAccount(appContext.reactContext!!, params).enableRecoveryModule(
+                guardianAddress.hexToAddress(),
+                getRecoveryConfig(recoveryConfig)
+            )
+        }
+        AsyncFunction("getCurrentGuardian") Coroutine { params: CommonParams, delayAddress: String ->
+            return@Coroutine getSafeAccount(appContext.reactContext!!, params).getCurrentGuardian(
+                delayAddress.hexToAddress()
+            )?.toChecksumHex()
+        }
+        AsyncFunction("isRecoveryStarted") Coroutine { params: CommonParams, delayAddress: String ->
+            return@Coroutine getSafeAccount(appContext.reactContext!!, params).isRecoveryStarted(
+                delayAddress.hexToAddress()
+            )
+        }
+        AsyncFunction("cancelRecovery") Coroutine { params: CommonParams, delayAddress: String ->
+            return@Coroutine getSafeAccount(appContext.reactContext!!, params).cancelRecovery(
+                delayAddress.hexToAddress()
+            )
+        }
+
     }
 }
 
@@ -187,6 +239,7 @@ private fun <T> T.toMap(): Map<String, Any?> {
                 "isNewWallet" to isNewWallet,
             )
         }
+
         is Unit -> {
             return mapOf("success" to true)
         }
@@ -197,12 +250,14 @@ private fun <T> T.toMap(): Map<String, Any?> {
                 "webAuthnSigners" to this.map { (it as WebAuthnSigner).toMap() }
             )
         }
+
         is IsValidSignatureResponse -> {
             return mapOf(
                 "success" to success,
                 "result" to result,
             )
         }
+
         else -> {
             throw IllegalArgumentException("Unsupported type")
         }
@@ -237,13 +292,29 @@ private suspend fun getSafeAccount(context: Context, params: CommonParams): Safe
     requireNotNull(params.signer) { "signer is required" }
     val rpcService = HttpService(params.rpcUrl)
     val bundlerClient = SimpleBundlerClient(HttpService(params.bundlerUrl))
-    val paymasterClient = if (params.paymasterUrl != null) PaymasterClient(params.paymasterUrl) else null
+    val paymasterClient =
+        if (params.paymasterUrl != null) PaymasterClient(params.paymasterUrl) else null
     val signer = getSigner(context, params.signer)
     val safeConfig = getSafeConfig(params.config!!)
     return if (params.address != null) {
-        SafeAccount.fromAddress(params.address, signer, bundlerClient, params.chainId, rpcService, paymasterClient = paymasterClient, config = safeConfig)
+        SafeAccount.fromAddress(
+            params.address,
+            signer,
+            bundlerClient,
+            params.chainId,
+            rpcService,
+            paymasterClient = paymasterClient,
+            config = safeConfig
+        )
     } else {
-        SafeAccount.createNewAccount(signer, bundlerClient, params.chainId, rpcService, paymasterClient = paymasterClient, config = safeConfig)
+        SafeAccount.createNewAccount(
+            signer,
+            bundlerClient,
+            params.chainId,
+            rpcService,
+            paymasterClient = paymasterClient,
+            config = safeConfig
+        )
     }
 }
 
@@ -333,5 +404,14 @@ private fun UserOperationByHash.toMap(): Map<String, Any?> {
         "transactionHash" to transactionHash,
         "blockNumber" to blockNumber,
         "blockHash" to blockHash,
+    )
+}
+
+private fun getRecoveryConfig(config: Map<String, Any>): RecoveryModuleConfig {
+    return RecoveryModuleConfig(
+        moduleFactoryAddress = config["moduleFactoryAddress"]!! as String,
+        delayModuleAddress = config["delayModuleAddress"]!! as String,
+        recoveryCooldown = (config["recoveryCooldown"]!! as Double).toInt(),
+        recoveryExpiration = (config["recoveryExpiration"]!! as Double).toInt(),
     )
 }
