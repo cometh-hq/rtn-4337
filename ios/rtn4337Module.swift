@@ -232,9 +232,9 @@ public class rtn4337Module: Module {
             let delayModuleAddress = try safeAccount.predictRecoveryModuleAddress(config: recoveryConfig.toRecoveryConfig())
             return delayModuleAddress?.toChecksumAddress()
         }
-        AsyncFunction("enableRecoveryModule") { (params: CommonParams, guardianAddress: String, recoveryConfig: [String: Any]) -> String in
+        AsyncFunction("enableRecovery") { (params: CommonParams, guardianAddress: String, recoveryConfig: [String: Any]) -> String in
             let safeAccount = try await getSafeAccount(params: params)
-            let userOpHash = try await safeAccount.enableRecoveryModule(guardianAddress: EthereumAddress(guardianAddress), config: recoveryConfig.toRecoveryConfig())
+            let userOpHash = try await safeAccount.enableRecovery(guardianAddress: EthereumAddress(guardianAddress), config: recoveryConfig.toRecoveryConfig())
             return userOpHash
         }
         AsyncFunction("getCurrentGuardian") { (params: CommonParams, delayAddress: String) -> String? in

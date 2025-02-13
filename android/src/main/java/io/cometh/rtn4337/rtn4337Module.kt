@@ -199,8 +199,8 @@ class rtn4337Module : Module() {
                 params
             ).predictDelayModuleAddress(getRecoveryConfig(recoveryConfig))
         }
-        AsyncFunction("enableRecoveryModule") Coroutine { params: CommonParams, guardianAddress: String, recoveryConfig: Map<String, Any> ->
-            return@Coroutine getSafeAccount(appContext.reactContext!!, params).enableRecoveryModule(
+        AsyncFunction("enableRecovery") Coroutine { params: CommonParams, guardianAddress: String, recoveryConfig: Map<String, Any> ->
+            return@Coroutine getSafeAccount(appContext.reactContext!!, params).enableRecovery(
                 guardianAddress.hexToAddress(),
                 getRecoveryConfig(recoveryConfig)
             )

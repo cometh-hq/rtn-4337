@@ -167,9 +167,9 @@ class SafeAccount {
     return rtn4337Module.predictDelayModuleAddress(this.getCommonParams(), recoveryConfig);
   }
 
-  enableRecoveryModule(guardianAddress: string, recoveryConfig: RecoveryConfig = defaultRecoveryConfig): Promise<string> {
+  enableRecovery(guardianAddress: string, recoveryConfig: RecoveryConfig = defaultRecoveryConfig): Promise<string> {
     requireHexAddress("guardianAddress", guardianAddress);
-    return rtn4337Module.enableRecoveryModule(this.getCommonParams(), guardianAddress, recoveryConfig);
+    return rtn4337Module.enableRecovery(this.getCommonParams(), guardianAddress, recoveryConfig);
   }
 
   getCurrentGuardian(delayAddress: string): Promise<string | null> {

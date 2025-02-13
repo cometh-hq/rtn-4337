@@ -238,13 +238,13 @@ rtn-4337 provides a way to enable a recovery module for a Safe Account. In our i
 Here is the API we provide:
 
 ```typescript
-fun enableRecoveryModule(guardianAddress: Address, recoveryModuleConfig: RecoveryModuleConfig = RecoveryModuleConfig()): String
+fun enableRecovery(guardianAddress: Address, recoveryModuleConfig: RecoveryModuleConfig = RecoveryModuleConfig()): String
 fun getCurrentGuardian(delayAddress: Address): Address?
 fun isRecoveryStarted(delayAddress: Address): Boolean
 fun cancelRecovery(delayAddress: Address): String
 ```
 
-- **enableRecoveryModule**: Enables the recovery module for the safe account by passing the guardian address and the recovery module configuration.
+- **enableRecovery**: Enables the recovery module for the safe account by passing the guardian address and the recovery module configuration.
 - **getCurrentGuardian**: Returns the current guardian address (if any) for the delay module.
 - **isRecoveryStarted**: Returns true if the recovery process has started.
 - **cancelRecovery**: Cancels the recovery process (if any).

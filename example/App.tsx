@@ -306,10 +306,10 @@ export default function App() {
 
             <Button title="Connect API" onPress={handleConnectAPI} />
             <View style={styles.section}>
-              <Button title="enableRecoveryModule" onPress={async () => {
+              <Button title="enableRecovery" onPress={async () => {
                 if (!safeAccount) return;
                 try {
-                  const result = await safeAccount.enableRecoveryModule(
+                  const result = await safeAccount.enableRecovery(
                     "0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E",
                   );
                   setRecoveryResult(result || "");
