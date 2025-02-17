@@ -246,6 +246,7 @@ cancelRecovery(delayAddress: string): Promise<string>
 ```
 
 - **enableRecovery**: Enables the recovery module for the safe account by passing the guardian address and the recovery module configuration.
+- **predictDelayModuleAddress**: Predicts the address of the delay module for the given recovery configuration.
 - **getCurrentGuardian**: Returns the current guardian address (if any) for the delay module.
 - **isRecoveryStarted**: Returns true if the recovery process has started.
 - **cancelRecovery**: Cancels the recovery process (if any).
