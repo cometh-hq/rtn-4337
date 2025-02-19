@@ -273,9 +273,9 @@ Here are the features we provide:
 ```typescript
 const apiKey = "<api_key>";
 const api = new ConnectApi(apiKey, "https://api.4337.cometh.io", 84532);
-const wallet = await api.initWallet({ walletAddress, initiatorAddress });
+const wallet = await api.initWallet({ walletAddress, initiatorAddress, publicKeyId, publicKeyX, publicKeyY, deviceData });
 const signers = await api.getPasskeySignersByWalletAddress({ walletAddress });
-const signer = await api.createWebAuthnSigner({ walletAddress, publicKeyId, publicKeyX, publicKeyY, deviceData });
+const signer = await api.createWebAuthnSigner({ walletAddress, publicKeyId, publicKeyX, publicKeyY, deviceData, signerAddress });
 const isValid = await api.isValidSignature({ walletAddress, message, signature });
 ```
 
