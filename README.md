@@ -265,6 +265,26 @@ const defaultRecoveryConfig: RecoveryConfig = {
 You can override the default values by providing your own `RecoveryConfig`.
 
 
+### Connect API
+
+rtn-4337 provides seamless integration of the Connect API for 4337.
+Here are the features we provide:
+
+```typescript
+const apiKey = "<api_key>";
+const api = new ConnectApi(apiKey, "https://api.4337.cometh.io", 84532);
+const wallet = await api.initWallet({ walletAddress, initiatorAddress, publicKeyId, publicKeyX, publicKeyY, deviceData });
+const signers = await api.getPasskeySignersByWalletAddress({ walletAddress });
+const signer = await api.createWebAuthnSigner({ walletAddress, publicKeyId, publicKeyX, publicKeyY, deviceData, signerAddress });
+const isValid = await api.isValidSignature({ walletAddress, message, signature });
+```
+
+- **initWallet**: Initialize a smart account.
+- **getPasskeySignersByWalletAddress**: Get the list of passkey signers for a given wallet address.
+- **createWebAuthnSigner**: Create the webauthn signer for a given wallet address and public key.
+- **isValidSignature**: Check if a signature is valid for a given message.
+
+
 ### RPC, Bundler and Paymaster URLs
 
 - RPC: To interact with the blockchain and call methods on smart contracts.
